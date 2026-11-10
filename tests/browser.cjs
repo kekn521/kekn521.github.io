@@ -58,10 +58,13 @@ const http = require('node:http');
     for (const size of [{width:390,height:844},{width:320,height:640},{width:844,height:390}]) {
       await page.setViewportSize(size);await page.goto(base);await settle();await screenshot(`atlas-${size.width}x${size.height}`);
       const geometry=await page.locator('.destination').evaluateAll(nodes=>nodes.map(el=>{const r=el.getBoundingClientRect();return {name:el.dataset.route,left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};}));
+      for(let i=0;i<geometry.length;i++)for(let j=i+1;j<geometry.length;j++){const a=geometry[i],b=geometry[j];assert(a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top,`${size.width}: overlapping ${a.name} and ${b.name}`);}
       for(const node of geometry){assert(node.left>=-2 && node.right<=size.width+2,`${size.width}: ${node.name} outside horizontal viewport: ${JSON.stringify(node)}`);assert(node.top>=60 && node.bottom<=size.height-45,`${size.width}: ${node.name} outside vertical viewport: ${JSON.stringify(node)}`);assert(node.width>=44 && node.height>=44,`Small target: ${node.name}`);}
       for(const route of ['research','about','questions','off-duty','contact']) {
         await page.goto(base+'#'+route);await settle();
         assert.equal(await page.locator('#'+route).isVisible(),true);
+        const headingTop=await page.locator('#'+route+' h2').evaluate(el=>el.getBoundingClientRect().top);
+        assert(headingTop>=60,`${size.width}: clipped heading in ${route}: ${headingTop}`);
         assert.equal(await page.locator('#'+route).evaluate(el=>el.scrollWidth<=el.clientWidth+1),true,`${size.width}: overflow in ${route}`);
         if(size.width===390 && ['research','off-duty'].includes(route)) await screenshot(`${route}-mobile`);
       }
