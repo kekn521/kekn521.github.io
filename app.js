@@ -11,7 +11,7 @@
   const themeToggle = document.getElementById('theme-toggle');
   const zoomIn = document.getElementById('zoom-in');
   const zoomOut = document.getElementById('zoom-out');
-  const labels = {home:'Atlas',research:'Research',about:'About',questions:'Research direction','off-duty':'Off duty',contact:'Say hello'};
+  const labels = {home:'Home',research:'Research',about:'About',questions:'Research direction','off-duty':'Off duty',contact:'Say hello'};
   let currentRoute = null;
   let returnFocus = null;
   let directoryFocus = null;
@@ -77,7 +77,7 @@
     } else {
       document.getElementById(route).querySelector('h2').focus({preventScroll:true});
     }
-    document.getElementById('navigation-status').textContent = isHome ? 'Atlas overview' : `${labels[route]} opened. Use Atlas to return to the map.`;
+    document.getElementById('navigation-status').textContent = isHome ? 'Home overview' : `${labels[route]} opened. Use Home to return to the map.`;
   }
 
   function navigate(route, source = null) {

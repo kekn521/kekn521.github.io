@@ -22,3 +22,5 @@ dialog{width:min(620px,calc(100% - 32px));max-height:calc(100dvh - 40px);padding
 @media(max-height:650px) and (min-width:768px){.destination-contact{top:42%;right:2%;max-width:14%;min-height:44px}.contact-object{display:none}.destination-contact .destination-note{display:none}.destination-contact .destination-title{font-size:20px}.destination-life{bottom:12px}}
 
 @media(max-height:450px) and (min-width:768px){.destination-research{top:4%;left:4%;width:20%}.research-object{margin-bottom:8px}.destination-research .destination-title{font-size:18px}.destination-note{font-size:8px}.destination-about{top:0;right:15%}.about-object{font-size:36px}.destination-about .destination-title{font-size:18px}.destination-questions{left:7%;bottom:5%;max-width:24%}.question-object{font-size:22px;margin-bottom:8px}.destination-questions .destination-title{font-size:16px}.destination-life{right:13%;bottom:6%;width:18%}.coffee-object{height:60px;margin-bottom:6px}.destination-life .destination-title{font-size:18px}.destination-contact{right:2%;top:43%;max-width:12%}.destination-contact .destination-title{font-size:16px}}
+
+.questions-layout .question-copy{margin-top:50px}
