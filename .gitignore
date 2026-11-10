@@ -1,0 +1,5 @@
+node_modules/
+test-results/
+_site/
+portfolio-preview.html
+portfolio-github-pages.zip
