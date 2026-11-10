@@ -11,7 +11,7 @@
   const themeToggle = document.getElementById('theme-toggle');
   const zoomIn = document.getElementById('zoom-in');
   const zoomOut = document.getElementById('zoom-out');
-  const labels = {home:'Home',research:'Research',about:'About',questions:'Research direction','off-duty':'Off duty',contact:'Say hello'};
+  const labels = {home:'Home',projects:'Projects',research:'Vis4GS',about:'About',questions:'Research direction','off-duty':'Off duty',contact:'Say hello'};
   let currentRoute = null;
   let returnFocus = null;
   let directoryFocus = null;

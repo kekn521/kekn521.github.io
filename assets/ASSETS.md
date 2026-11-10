@@ -9,3 +9,6 @@
 ## Coffee image prompt
 
 Use case: photorealistic-natural. Asset type: editorial still-life for the Off duty destination of an academic portfolio with a pale pastel blue visual identity. Make a tactile, art-directed photograph of one translucent pale blue conical pour-over coffee dripper with a paper filter, sitting on a simple clear glass server containing coffee, next to a brushed steel gooseneck kettle. Off-center composition, shot slightly from above at a three-quarter angle, with the objects in the middle half of the frame. Seamless powder-blue tabletop and backdrop, gentle daylight from left, realistic soft shadows, subtle fine film grain. Restrained, real materials, precise plausible geometry. Landscape composition 3:2. No text, logos, hands, people, beans scattered as decoration, plants, steam, gradients, cartoon styling, additional objects, or watermarks. This is an illustrative interest image, not a photograph of the owner's possessions.
+
+## Waystation
+`waystation.webp`: optimized from the public `kekn521/Waystation` repository, `artifacts/waystation-overview-orbit.png` (Git blob `9e5971dd4bc0ac6ff30dd780c0d41afde6fde810`). The screenshot shows the actual interface with illustrative workspace and service data.
