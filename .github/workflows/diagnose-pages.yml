@@ -1,0 +1,29 @@
+name: Diagnose public Pages response
+on:
+  push:
+    branches: [design/full-screen-atlas]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read published responses
+        shell: python
+        run: |
+          import urllib.request, hashlib, time
+          base = "https://kekn521.github.io/"
+          for path in ["", "?check=projects-826398b", "app.js", "app.js?check=projects-826398b", "kekn521/"]:
+              url = base + path
+              try:
+                  req = urllib.request.Request(url, headers={"Cache-Control": "no-cache", "User-Agent": "Portfolio-deployment-check"})
+                  with urllib.request.urlopen(req, timeout=30) as response:
+                      body = response.read()
+                      text = body.decode("utf-8")
+                      print("URL", url, "STATUS", response.status, "FINAL", response.url)
+                      print("HEADERS", {k:response.headers.get(k) for k in ["cache-control","age","etag","last-modified","x-cache","x-served-by"]})
+                      print("SHA256", hashlib.sha256(body).hexdigest(), "BYTES", len(body))
+                      print("HAS_PROJECTS_PAGE", 'id="projects"' in text, "HAS_PROJECTS_ROUTE", "projects:'Projects'" in text)
+                      print("NAV_PROJECTS", '>Projects <span' in text, "NAV_RESEARCH", '>Research <span' in text)
+              except Exception as error:
+                  print("FETCH_ERROR", url, str(error))
