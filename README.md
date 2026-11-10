@@ -4,7 +4,7 @@ Static personal research website at https://kekn521.github.io/.
 
 ## Navigation
 
-The full-screen atlas is the homepage and directory. Its five destinations open full-page views: Projects, About, Research direction, Off duty, and Say hello. Projects opens a curated index; the Vis4GS entry leads to its research detail page. The Home link and Escape return to the overview. Browser back/forward and direct hash links work. The Directory dialog provides a keyboard-friendly alternative to spatial navigation.
+The full-screen atlas is the homepage and directory. Its five destinations open full-page views: Projects, About, Research direction, Off duty, and Say hello. Projects opens a shared index with separate Research and Projects sections. Research contains Vis4GS, with a link to its detail page. Projects contains Waystation, The Legend of ChunYi (I2P-FinalProject), MedAgentCV, and Auto Schedule Maker. The Home link and Escape return to the overview. Browser back/forward and direct hash links work. The Directory dialog provides a keyboard-friendly alternative to spatial navigation.
 
 Drag empty map space to pan. Plus/minus controls zoom; Reset view restores the overview. With the map focused, arrow keys pan, +/- zoom, and 0 resets. Zoom and pan are bounded. Browser pinch zoom is retained. All content remains visible as a normal document when JavaScript is disabled.
 
