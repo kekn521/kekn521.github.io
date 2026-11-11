@@ -26,7 +26,11 @@ Open `index.html` directly, or run `python3 -m http.server 4173 --bind 127.0.0.1
 
 GitHub Pages uses GitHub Actions. The workflow runs browser checks first. Only successful runs on `main` deploy. The `design/full-screen-atlas` branch runs tests and saves screenshots without deploying. Screenshots are attached as `portfolio-browser-review` for seven days.
 
-The deployment stages only `index.html`, `styles.css`, `app.js`, `background.js`, `background.css`, `.nojekyll`, and `assets/`. This repository hosts the root domain. The separate `kekn521` repository remains the GitHub profile repository.
+The deployment stages only `index.html`, `styles.css`, `app.js`, `background.js`, `background.css`, `robots.txt`, `sitemap.xml`, `.nojekyll`, and `assets/`. This repository hosts the root domain. The separate `kekn521` repository remains the GitHub profile repository.
+
+## Search discovery
+
+The homepage title and Open Graph tags lead with the full name "Kai-Yuan Lin (Ken Lin)", and the full name is also shown next to "Ken Lin" in the on-page intro, so search results can match either name. A Person JSON-LD block repeats only factual metadata already on the page (name, alternate names, affiliation, GitHub and LinkedIn links). The canonical URL points at the site root, `robots.txt` allows all crawlers and references `sitemap.xml`, and the sitemap lists only the root URL because every section is reached through hash navigation on the single page. Search Console verification and any indexing request are separate account-side steps and have not been done; none of these changes make ranking promises.
 
 ## Content maintenance
 

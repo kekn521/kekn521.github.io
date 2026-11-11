@@ -109,7 +109,7 @@
     atlas.setAttribute('aria-hidden', String(!isHome));
     document.body.dataset.route = route;
     document.getElementById('route-crumb').textContent = isHome ? '' : labels[route];
-    document.title = isHome ? 'Ken Lin | Research atlas' : `${labels[route]} | Ken Lin`;
+    document.title = isHome ? 'Kai-Yuan Lin (Ken Lin) | Visual Analytics Researcher' : `${labels[route]} | Kai-Yuan Lin (Ken Lin)`;
     document.querySelectorAll('[data-route]').forEach(link => {
       if (link.dataset.route === route) link.setAttribute('aria-current','page');
       else link.removeAttribute('aria-current');

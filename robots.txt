@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kekn521.github.io/sitemap.xml
