@@ -139,7 +139,7 @@
     pauseButton.disabled=reduce.matches;
     pauseButton.setAttribute('aria-pressed',String(stopped));
     pauseButton.setAttribute('aria-label',reduce.matches?'Background motion disabled by reduced-motion preference':paused?'Play background animation':'Pause background animation');
-    pauseButton.querySelector('span').textContent=stopped?'[ > ]':'[ || ]';
+    pauseButton.querySelector('path').setAttribute('d',stopped?'M6 3l10 7-10 7z':'M7 4v12M13 4v12');
     if(isLive())frame=requestAnimationFrame(tick);
   }
 

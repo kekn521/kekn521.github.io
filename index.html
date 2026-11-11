@@ -10,239 +10,73 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://kekn521.github.io/">
   <title>Ken Lin | Research atlas</title>
-  <link rel="icon" href="assets/favicon.svg?v=ascii-20261112" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=ascii-20261112">
-  <link rel="stylesheet" href="background.css?v=ascii-20261112">
-  <script src="app.js?v=ascii-20261112" defer></script>
-  <script src="background.js?v=ascii-20261112" defer></script>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/lato-black.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="background.css">
+  <script src="app.js" defer></script>
+  <script src="background.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#directory">Skip to directory</a>
   <header class="site-header">
     <a class="wordmark" href="#home" data-route="home" aria-label="Ken Lin, return home">Ken Lin <span lang="zh-Hant">林楷源</span></a>
     <div class="header-trail"><a href="#home" data-route="home" id="atlas-return">Home</a><span id="route-crumb" aria-live="polite"></span></div>
-    <div class="header-actions"><button id="theme-toggle" class="text-button js-control" type="button" aria-label="Switch to dark theme">Dark</button><button id="directory-toggle" class="directory-toggle js-control" type="button" aria-haspopup="dialog" aria-controls="directory-dialog">Directory <span aria-hidden="true">+</span></button></div>
+    <div class="header-actions"><button id="theme-toggle" class="text-button js-control" type="button" aria-label="Switch to dark theme">Dark</button><button id="directory-toggle" class="directory-toggle js-control" type="button" aria-haspopup="dialog" aria-controls="directory-dialog">Directory <span aria-hidden="true">＋</span></button></div>
   </header>
   <main>
     <section class="atlas-screen" id="home" aria-labelledby="atlas-title">
       <div class="map-viewport" id="map-viewport" tabindex="0" aria-label="Research atlas. Select a destination, or use arrow keys to pan, plus and minus to zoom, and zero to reset.">
         <div class="map-scene" id="map-scene">
           <svg class="connections" viewBox="0 0 1400 820" preserveAspectRatio="none" aria-hidden="true"><path data-path="projects" d="M660 365 C500 350 490 185 280 200"/><path data-path="about" d="M780 360 C900 360 890 130 1080 160"/><path data-path="questions" d="M650 420 C530 465 560 650 295 635"/><path data-path="off-duty" d="M800 430 C875 560 965 610 1110 610"/><path data-path="contact" d="M820 380 C1030 410 1130 365 1250 370"/></svg>
-          <div class="map-identity"><h1 id="atlas-title" aria-label="Ken Lin"><span class="ascii-wordmark" aria-hidden="true">#   #  #####  #   #       #      #####  #   #
-#  #   #      ##  #       #        #    ##  #
-###    ####   # # #       #        #    # # #
-#  #   #      #  ##       #        #    #  ##
-#   #  #####  #   #       #####  #####  #   #</span><span lang="zh-Hant">林楷源</span></h1><p>Visual analytics researcher.<br>ISA master’s student at NTHU.</p></div>
-          <a class="destination destination-research" href="#projects" data-route="projects"><div class="research-object"><div class="ascii-frame " style="--columns:61;--rows:15"><pre class="ascii-art" role="img" aria-label="ASCII orbital workspace map">+----------------------------------------------------------+
-| ~/workspaces                         [ orbital view ]    |
-|                                                          |
-|       . . . . . .                  . . . .               |
-|    .             .              .           .            |
-|   .     o agent   .-----+------.   o agent    .           |
-|   .              .     |       .            .            |
-|    .  [project] .      |        . [project] .            |
-|       . . . .          @           . . .                 |
-|                    WAYSTATION                            |
-|       . . . .          |                                 |
-|     .  o     .---------+     sessions / tools / status    |
-|     . [repo] .                                           |
-|       . . . .                &gt; explore_                  |
-+----------------------------------------------------------+</pre></div></div><span class="destination-title">Projects <span aria-hidden="true">-&gt;</span></span><span class="destination-note">Research, tools & experiments</span></a>
-          <a class="destination destination-about" href="#about" data-route="about"><div class="about-object"><div class="ascii-frame ascii-portrait" style="--columns:72;--rows:52"><pre class="ascii-art" role="img" aria-label="ASCII portrait of Ken Lin">                                  .-=======--..                         
-                          ..    =*%%%%%%%%%%%#*+=--::                   
-                    .=+*#####*+#%%%@@@@@@%%%##%%%#+--=:                 
-               .:-+*#%%%%%%%@@@@@@@@@@@@@@%%####%%#*=-=:                
-              :*+#%@%%%%%@@@@@@@@@@@@@@@@@%%%%%%%%%##**+:               
-             :#%@@%%%@@@%@@@@@@@@@@%%%%@@@@@%%%%##%%%%#*==.             
-          .-*#%@%%%%@@@@%%@@@@@@@@@@%%##%@@@@%%%%%%##%%#*+=.            
-         :-%@#%%%%%@@@@%#%@@@@@@@@@@@%%#*#@@@@@%#%%%%%%%%##+-           
-        ::#%%#%%%%@@@@@#%@%@@@@@@@@@@@@%%##@@@@@@#@%%%%%#####*:         
-        :*@@%#%%%%@%@%%%%%%@@%#%@@@%#@@@%%%%@@@@@@%@%%%%%###%#+-.       
-        =#%%#%@%%%#%%##%##%#+--=*%@@%#%@@@@@%%@%%@@@%%@%@###%#*:.       
-        *##%#%%#%##%%##%###+-:::=#%@%##@@@@@%%##%%@@@%#%%%%%%%#=        
-       .####%#####%##%%##%*::::.:*%%%#%%%%@@%##%#%%@@%%##%%@@%%+        
-       =%########%##%%%##%=:::...+#%%%@@%%%@%%%#%%%#%%%%#%%%@@%%.       
-       =**##%##%%%%%##%#@*::.:...+#%*%@@@@%%@%%%#%%###%%%#@@@@@%:       
-      .+*#%%%%%%@@%%%%%@*::.:...:**#**%@@@@%@@@@%%%%%%#%@@%@@@%@+       
-      ::=%@@@@@@@@%%%@%+::.::..:=*=+#+*@@@@%#%@@@@%%#%%%%%%%%@%%=       
-        .#%@@@@@@@@@%#=:.......-==--+=-+%@@%#**#%@@@%%%%%%%%%%%#        
-         +%%%@%@@@@%*+===-:....:::...:-:-+#%%*--=+*#%@@%@%%%@%%:        
-         .##%%%%%%%*#######**=-:::....:::=*%@@%###*++*@@@@%%%@+         
-          +%%%%%#*#==-:::::-+++-:.....::-++++====+**+=*@@@@@*=:         
-          .#%%%%*==-:::..:...::--::.:::--::. ....::-===#%%@#.           
-          -+#%%%+-:::--+*+%%*--:::...::-:--#%#++=-----=*%%%*.           
-          :-=*%*=-:::-==-:=+-:-.::....::.-:=*+-*+=-::-=*%#++:           
-          .-.=%*=-:::...........::....::...::::.:::::-=*@*--.           
-          .:.-#*=-::..................:::..........::-=*@+:-.           
-           -.-=+=-::...........::.....::::.........::-=*#=::.           
-           :::-++--::.........::::....::::.........::-+*+-:-.           
-            :::-+=-:::........:::......:::........:::-+*=:::            
-             .:-+=--::.......:-..::..::::-:......:::--++--:             
-              .:==--::.......:------===---:......::--=+=-.              
-               .-+=--::........::.....:::.......:::--=+-.               
-                 ==---:::.............:........:::--=+.                 
-                 .+---:::........:..::::::....:::---=-                  
-                  -=---::::::---=========--:::::---==                   
-                   ==--::::.:-====---==+++=:::::---+:                   
-                   .+=--::::..:---::::-=--..:::---=:                    
-                    ++=--:::::::---===--::::::--==+                     
-                    =**+=-:::::::.....::::::::-=+**                     
-                    ==+**+=::::........:::::-=*##**                     
-                    ==-=+*#+-::::.....:::::=*##*++*.                    
-                    ==----+*#+---::::::--+*##*+===+:                    
-                    ==-:::--+**********###*+==---=+:                    
-                   .+--:::::--=+++*******+==-----=+=                    
-               .--:-=--::::::----::::--==--:::---==+:=+:                
-              -#%+===--::...:::::::::----::::::--==++*%%+:.             
-           .-*#=:------::...::::::---::::::::::----=---+##*++:..        
-       .:=+**#*+::-::::::........::::::::..::::--------+#**#@%%%#+:     
-   .-=++******##+::::::::..................::::----::-*##**%%%@%%@@%+:  
--+**********#####*-..:::::.................::::::::-+#####%@%%%%%%%%@%*=
-*************######*+-:::..................::::-=+*######%@%%%%%%%%%%%@@
-***********#**#########*+=-:.............:-==+*#########%@%@@%%%%%%%%%%%</pre></div></div><span class="destination-title">About <span aria-hidden="true">-&gt;</span></span><span class="destination-note">ISA, NTHU / VM Lab</span></a>
-          <a class="destination destination-questions" href="#questions" data-route="questions"><div class="question-object"><div class="ascii-frame " style="--columns:24;--rows:5"><pre class="ascii-art" role="img" aria-label="ASCII diagram connecting AI, questions and visualization">[ AI ] -------- [ WHY? ]
-   |               |    
-   +---- [ ? ] ----+    
-           |            
-    [ VISUALIZE ]       </pre></div></div><span class="destination-title">Research direction <span aria-hidden="true">-&gt;</span></span><span class="destination-note">XAI & visualization</span></a>
-          <a class="destination destination-life" href="#off-duty" data-route="off-duty"><div class="coffee-object"><div class="ascii-frame " style="--columns:37;--rows:15"><pre class="ascii-art" role="img" aria-label="ASCII pour-over dripper, coffee server and kettle">    (  )              .--------.     
-     )(               |  ____  |___  
-  .------.            | /    \ |   \ 
- /::::::::\           | |    | |    |
- \::::::::/           | \____/ |   / 
-  \::::::/            |        |--&#x27;  
-   \::::/        ____/         |     
-    \::/       /____.          |     
------\/-----        |          |     
-   |    |           &#x27;----------&#x27;     
-  /      \                           
- /        \                          
-|~~~~~~~~~~|                         
-|  COFFEE  |                         
-&#x27;----------&#x27;                         </pre></div></div><span class="destination-title">Off duty <span aria-hidden="true">-&gt;</span></span><span class="destination-note">Coffee, games, workouts</span></a>
-          <a class="destination destination-contact" href="#contact" data-route="contact"><div class="contact-object"><div class="ascii-frame " style="--columns:21;--rows:7"><pre class="ascii-art" role="img" aria-label="ASCII envelope">+-------------------+
-|\                 /|
-| \               / |
-|  \     @       /  |
-|   &#x27;-----------&#x27;   |
-|                   |
-+-------------------+</pre></div></div><span class="destination-title">Say hello</span><span class="destination-note">Work & collaboration</span></a>
+          <div class="map-identity"><h1 id="atlas-title">Ken Lin<span lang="zh-Hant">林楷源</span></h1><p>Visual analytics researcher.<br>ISA master’s student at NTHU.</p></div>
+          <a class="destination destination-research" href="#projects" data-route="projects"><div class="research-object"><img src="assets/waystation.webp" alt="Waystation’s terminal interface, with workspaces shown as an orbital map." width="1200" height="760" fetchpriority="high" draggable="false"></div><span class="destination-title">Projects <span aria-hidden="true">↗</span></span><span class="destination-note">Research, tools & experiments</span></a>
+          <a class="destination destination-about" href="#about" data-route="about"><span class="about-object" lang="zh-Hant" aria-hidden="true">清華</span><span class="destination-title">About <span aria-hidden="true">↗</span></span><span class="destination-note">ISA, NTHU / VM Lab</span></a>
+          <a class="destination destination-questions" href="#questions" data-route="questions"><span class="question-object" aria-hidden="true">Research<br>interests.</span><span class="destination-title">Research direction <span aria-hidden="true">↗</span></span><span class="destination-note">XAI & visualization</span></a>
+          <a class="destination destination-life" href="#off-duty" data-route="off-duty"><div class="coffee-object"><img src="assets/coffee.webp" alt="Illustrative pour-over coffee still life on a blue tabletop." width="1536" height="1024" draggable="false"></div><span class="destination-title">Off duty <span aria-hidden="true">↗</span></span><span class="destination-note">Coffee, games, workouts</span></a>
+          <a class="destination destination-contact" href="#contact" data-route="contact"><span class="contact-object" aria-hidden="true">↗</span><span class="destination-title">Say hello</span><span class="destination-note">Work & collaboration</span></a>
         </div>
       </div>
-      <div class="atlas-tools"><div class="background-controls js-control"><span>Terminal background</span><button id="background-pause" type="button" aria-label="Pause background animation" aria-pressed="false"><span aria-hidden="true">[ || ]</span></button></div><div class="zoom-tools js-control" role="group" aria-label="Atlas view controls"><button type="button" id="zoom-out" aria-label="Zoom out">-</button><output id="zoom-level" aria-live="polite" aria-label="Zoom level">100%</output><button type="button" id="zoom-in" aria-label="Zoom in">+</button><button type="button" id="reset-view">Reset view</button></div></div>
+      <div class="atlas-tools"><div class="background-controls js-control"><span>Terminal background</span><button id="background-pause" type="button" aria-label="Pause background animation" aria-pressed="false"><svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M7 4v12M13 4v12" fill="none" stroke="currentColor" stroke-width="2"/></svg></button></div><div class="zoom-tools js-control" role="group" aria-label="Atlas view controls"><button type="button" id="zoom-out" aria-label="Zoom out">−</button><output id="zoom-level" aria-live="polite" aria-label="Zoom level">100%</output><button type="button" id="zoom-in" aria-label="Zoom in">+</button><button type="button" id="reset-view">Reset view</button></div></div>
     </section>
 
     <section class="page-view projects-view" id="projects" data-page aria-labelledby="projects-heading"><div class="page-content">
       <div class="projects-intro"><h2 id="projects-heading" tabindex="-1">Projects.</h2><p class="lead">Research, everyday tools, and things built out of curiosity.</p></div>
       <div class="project-list">
         <section class="project-group" aria-labelledby="research-group-heading"><h3 id="research-group-heading">Research</h3>
-        <article class="project-entry project-feature" aria-labelledby="vis4gs-project-title"><div class="project-copy"><p class="project-kind">Research · IEEE VIS 2026 short paper</p><h4 id="vis4gs-project-title">Vis4GS</h4><p>A visual analytics tool for inspecting 3D Gaussian Splatting. Linked views connect scene artifacts with Gaussian properties, training history, and densification genealogy.</p><a class="action-link" href="#research" data-route="research">Explore the research <span aria-hidden="true">-&gt;</span></a></div><figure><div class="ascii-frame " style="--columns:59;--rows:17"><pre class="ascii-art" role="img" aria-label="ASCII diagram of the Vis4GS linked analysis workflow">+--------------------+       +---------------------------+ 
-| RENDERED SCENE     |       | GAUSSIAN INSPECTION        |
-|                    | ----&gt; |                           |
-|   .  . : : .       |       | properties  /  diagnostics |
-|  . : + # + : .     |       |                           |
-|   . : + : .        |       |     .       .             |
-|     . . .          |       |    / \     / \            |
-+--------------------+       +----+---+---+---+-----------+
-          ^                      |       |                 
-          |                      v       v                 
-          |                 +---------------------------+  
-          +-----------------| TRAINING HISTORY          |  
-                            |                           |  
-                            |  o---o---o---o---o        |  
-                            |      |       |            |  
-                            |      +--o    +--o--o      |  
-                            +---------------------------+  </pre></div><figcaption>First-authored research at NTHU’s VM Lab. <a href="assets/vis4gs-overview.webp">[ original figure ]</a></figcaption></figure></article>
+        <article class="project-entry project-feature" aria-labelledby="vis4gs-project-title"><div class="project-copy"><p class="project-kind">Research · IEEE VIS 2026 short paper</p><h4 id="vis4gs-project-title">Vis4GS</h4><p>A visual analytics tool for inspecting 3D Gaussian Splatting. Linked views connect scene artifacts with Gaussian properties, training history, and densification genealogy.</p><a class="action-link" href="#research" data-route="research">Explore the research <span aria-hidden="true">↗</span></a></div><figure><img src="assets/vis4gs-overview.webp" alt="Vis4GS links a reconstructed scene with diagnostic plots and Gaussian genealogy." width="2109" height="870" loading="lazy"><figcaption>First-authored research at NTHU’s VM Lab.</figcaption></figure></article>
         </section>
         <section class="project-group" aria-labelledby="software-group-heading"><h3 id="software-group-heading">Projects</h3>
-        <article class="project-entry project-feature" aria-labelledby="waystation-title"><div class="project-copy"><p class="project-kind">Developer tool · Rust / Ratatui</p><h4 id="waystation-title">Waystation</h4><p>A keyboard-driven terminal workspace for projects, persistent AI agent sessions, and system status. Its orbital map turns workspaces into planets and agent sessions into moons.</p><a class="action-link" href="https://github.com/kekn521/Waystation">Explore Waystation <span aria-hidden="true">-&gt;</span></a></div><figure><div class="ascii-frame " style="--columns:61;--rows:15"><pre class="ascii-art" role="img" aria-label="ASCII sketch of Waystation’s orbital workspace view">+----------------------------------------------------------+
-| ~/workspaces                         [ orbital view ]    |
-|                                                          |
-|       . . . . . .                  . . . .               |
-|    .             .              .           .            |
-|   .     o agent   .-----+------.   o agent    .           |
-|   .              .     |       .            .            |
-|    .  [project] .      |        . [project] .            |
-|       . . . .          @           . . .                 |
-|                    WAYSTATION                            |
-|       . . . .          |                                 |
-|     .  o     .---------+     sessions / tools / status    |
-|     . [repo] .                                           |
-|       . . . .                &gt; explore_                  |
-+----------------------------------------------------------+</pre></div><figcaption>ASCII sketch of the orbital workspace. <a href="assets/waystation.webp">[ original interface ]</a></figcaption></figure></article>
-        <article class="project-entry project-compact" aria-labelledby="chunyi-title"><div><p class="project-kind">I2P team project · C++ / Allegro</p><h4 id="chunyi-title">The Legend of ChunYi</h4></div><div class="project-copy"><p>A game project inspired by Age of War, built with C++ and Allegro. Includes stage selection, a shop, and a scoreboard.</p><a class="action-link" href="https://github.com/kekn521/I2P-FinalProject">Explore the game <span aria-hidden="true">-&gt;</span></a></div></article>
-        <article class="project-entry project-compact" aria-labelledby="medagent-title"><div><p class="project-kind">AI coursework · Prototype</p><h4 id="medagent-title">MedAgentCV</h4></div><div class="project-copy"><p>A course project exploring chest X-ray analysis with computer vision and AI agents. The interface shows detection overlays, generated analysis, and the dialogue between analysis and verification agents.</p><a class="action-link" href="https://github.com/kekn521/MedAgentCV">Explore MedAgentCV <span aria-hidden="true">-&gt;</span></a></div></article>
-        <article class="project-entry project-compact" aria-labelledby="schedule-title"><div><p class="project-kind">Software Studio coursework · Flutter</p><h4 id="schedule-title">Auto Schedule<br>Maker</h4></div><div class="project-copy"><p>A Flutter and Dart course project designed to turn uploaded syllabi into schedules, with calendar and task management views.</p><a class="action-link" href="https://github.com/kekn521/SoftwareStudioProject">Explore the project <span aria-hidden="true">-&gt;</span></a></div></article>
+        <article class="project-entry project-feature" aria-labelledby="waystation-title"><div class="project-copy"><p class="project-kind">Developer tool · Rust / Ratatui</p><h4 id="waystation-title">Waystation</h4><p>A keyboard-driven terminal workspace for projects, persistent AI agent sessions, and system status. Its orbital map turns workspaces into planets and agent sessions into moons.</p><a class="action-link" href="https://github.com/kekn521/Waystation">Explore Waystation <span aria-hidden="true">↗</span></a></div><figure><img src="assets/waystation.webp" alt="Waystation overview with an orbital workspace map, system metrics, and services." width="1200" height="760" loading="lazy"><figcaption>Real interface with illustrative workspace and service data.</figcaption></figure></article>
+        <article class="project-entry project-compact" aria-labelledby="chunyi-title"><div><p class="project-kind">I2P team project · C++ / Allegro</p><h4 id="chunyi-title">The Legend of ChunYi</h4></div><div class="project-copy"><p>A game project inspired by Age of War, built with C++ and Allegro. Includes stage selection, a shop, and a scoreboard.</p><a class="action-link" href="https://github.com/kekn521/I2P-FinalProject">Explore the game <span aria-hidden="true">↗</span></a></div></article>
+        <article class="project-entry project-compact" aria-labelledby="medagent-title"><div><p class="project-kind">AI coursework · Prototype</p><h4 id="medagent-title">MedAgentCV</h4></div><div class="project-copy"><p>A course project exploring chest X-ray analysis with computer vision and AI agents. The interface shows detection overlays, generated analysis, and the dialogue between analysis and verification agents.</p><a class="action-link" href="https://github.com/kekn521/MedAgentCV">Explore MedAgentCV <span aria-hidden="true">↗</span></a></div></article>
+        <article class="project-entry project-compact" aria-labelledby="schedule-title"><div><p class="project-kind">Software Studio coursework · Flutter</p><h4 id="schedule-title">Auto Schedule<br>Maker</h4></div><div class="project-copy"><p>A Flutter and Dart course project designed to turn uploaded syllabi into schedules, with calendar and task management views.</p><a class="action-link" href="https://github.com/kekn521/SoftwareStudioProject">Explore the project <span aria-hidden="true">↗</span></a></div></article>
         </section>
       </div>
-      <div class="view-ending"><p>More experiments and coursework on GitHub.</p><a href="https://github.com/kekn521?tab=repositories">Browse all repositories -&gt;</a></div>
+      <div class="view-ending"><p>More experiments and coursework on GitHub.</p><a href="https://github.com/kekn521?tab=repositories">Browse all repositories ↗</a></div>
     </div></section>
 
     <section class="page-view research-view" id="research" data-page aria-labelledby="research-heading"><div class="page-content">
-      <a class="project-back plain-link" href="#projects" data-route="projects">&lt;- All projects</a><div class="research-top"><p class="publication-line">IEEE VIS 2026 · Short paper</p><h2 id="research-heading" tabindex="-1">Vis4GS</h2><p class="research-subtitle">A Visual Analytic Tool for<br>3D Gaussian Splatting Reconstruction</p><a class="action-link" href="https://arxiv.org/abs/2606.26985">Read the paper <span aria-hidden="true">-&gt;</span></a></div>
-      <figure class="research-hero"><div class="ascii-frame " style="--columns:59;--rows:17"><pre class="ascii-art" role="img" aria-label="ASCII diagram of the Vis4GS linked analysis workflow">+--------------------+       +---------------------------+ 
-| RENDERED SCENE     |       | GAUSSIAN INSPECTION        |
-|                    | ----&gt; |                           |
-|   .  . : : .       |       | properties  /  diagnostics |
-|  . : + # + : .     |       |                           |
-|   . : + : .        |       |     .       .             |
-|     . . .          |       |    / \     / \            |
-+--------------------+       +----+---+---+---+-----------+
-          ^                      |       |                 
-          |                      v       v                 
-          |                 +---------------------------+  
-          +-----------------| TRAINING HISTORY          |  
-                            |                           |  
-                            |  o---o---o---o---o        |  
-                            |      |       |            |  
-                            |      +--o    +--o--o      |  
-                            +---------------------------+  </pre></div><figcaption>Linked views connect a rendered scene with the history of its Gaussian primitives. <a href="assets/vis4gs-overview.webp">[ original figure ]</a></figcaption></figure>
-      <div class="research-text"><div><h3>Looking past the final image.</h3><p>3D reconstructions can contain blur, floaters, and needle-like artifacts. Vis4GS helps inspect the Gaussians behind those artifacts and trace their evolution during training.</p><p>The tool links scene inspection, diagnostic scores, property timelines, and densification genealogy in one visual analysis workflow.</p></div><aside><h3>Paper & authors</h3><p><strong>Kai-Yuan Lin</strong><br>Aryabima Mandala Putra<br>Jui-Chi Lee<br>Shih-Hsuan Hung</p><p>National Tsing Hua University</p><a class="plain-link" href="https://arxiv.org/pdf/2606.26985">Download PDF -&gt;</a></aside></div>
-      <figure class="genealogy-figure"><div class="ascii-frame " style="--columns:37;--rows:15"><pre class="ascii-art" role="img" aria-label="ASCII diagram of clone, split and prune events in Gaussian genealogy">             [ Gaussian ]            
-                  |                  
-      +-----------+-----------+      
-      |                       |      
-   [ clone ]               [ split ] 
-      |                       |      
-+-----+-----+           +-----+-----+
-|           |           |           |
-o           o           o           o
-|           |           |           |
-o        [ prune ]      o           o
-|                       |           |
-+-----------+-----------+-----------+
-            |                        
-       training history              </pre></div><figcaption>Following Gaussian genealogy through densification. <a href="assets/vis4gs-genealogy.webp">[ original figure ]</a></figcaption></figure>
-      <div class="view-ending"><p>First-authored research, accepted at IEEE VIS 2026.</p><a href="#questions" data-route="questions">Explore my research interests <span aria-hidden="true">-&gt;</span></a></div>
+      <a class="project-back plain-link" href="#projects" data-route="projects">← All projects</a><div class="research-top"><p class="publication-line">IEEE VIS 2026 · Short paper</p><h2 id="research-heading" tabindex="-1">Vis4GS</h2><p class="research-subtitle">A Visual Analytic Tool for<br>3D Gaussian Splatting Reconstruction</p><a class="action-link" href="https://arxiv.org/abs/2606.26985">Read the paper <span aria-hidden="true">↗</span></a></div>
+      <figure class="research-hero"><img src="assets/vis4gs-overview.webp" alt="Vis4GS connects scene artifacts with Gaussian properties, genealogy, and training progress." width="2109" height="870"><figcaption>Linked views connect a rendered scene with the history of its Gaussian primitives.</figcaption></figure>
+      <div class="research-text"><div><h3>Looking past the final image.</h3><p>3D reconstructions can contain blur, floaters, and needle-like artifacts. Vis4GS helps inspect the Gaussians behind those artifacts and trace their evolution during training.</p><p>The tool links scene inspection, diagnostic scores, property timelines, and densification genealogy in one visual analysis workflow.</p></div><aside><h3>Paper & authors</h3><p><strong>Kai-Yuan Lin</strong><br>Aryabima Mandala Putra<br>Jui-Chi Lee<br>Shih-Hsuan Hung</p><p>National Tsing Hua University</p><a class="plain-link" href="https://arxiv.org/pdf/2606.26985">Download PDF ↗</a></aside></div>
+      <figure class="genealogy-figure"><img src="assets/vis4gs-genealogy.webp" alt="A simplified Gaussian densification example links creation, clone, split, and prune events to a genealogy view." width="1476" height="832" loading="lazy"><figcaption>Following Gaussian genealogy through densification.</figcaption></figure>
+      <div class="view-ending"><p>First-authored research, accepted at IEEE VIS 2026.</p><a href="#questions" data-route="questions">Explore my research interests <span aria-hidden="true">↗</span></a></div>
     </div></section>
 
-    <section class="page-view about-view" id="about" data-page aria-labelledby="about-heading"><div class="page-content about-layout"><div class="about-name"><h2 id="about-heading" tabindex="-1">Ken Lin<span lang="zh-Hant">林楷源</span></h2><p>Kai-Yuan Lin on papers.</p></div><div class="about-copy"><p class="lead">I’m a first-year master’s student in ISA at National Tsing Hua University.</p><p>I work in VM Lab, advised by Dr. Shih-Hsuan Hung (Kevin). My interests are in visual analytics and tools that help researchers understand complex computational processes.</p><dl class="academic-details"><div><dt>Currently</dt><dd>M.S. student, ISA<br>National Tsing Hua University</dd></div><div><dt>Research group</dt><dd>VM Lab<br>Dr. Shih-Hsuan Hung (Kevin)</dd></div><div><dt>Research experience</dt><dd>First author, Vis4GS<br>IEEE VIS 2026 short paper</dd></div></dl><a class="action-link" href="#research" data-route="research">Explore Vis4GS <span aria-hidden="true">-&gt;</span></a></div></div></section>
+    <section class="page-view about-view" id="about" data-page aria-labelledby="about-heading"><div class="page-content about-layout"><div class="about-name"><h2 id="about-heading" tabindex="-1">Ken Lin<span lang="zh-Hant">林楷源</span></h2><p>Kai-Yuan Lin on papers.</p></div><div class="about-copy"><p class="lead">I’m a first-year master’s student in ISA at National Tsing Hua University.</p><p>I work in VM Lab, advised by Dr. Shih-Hsuan Hung (Kevin). My interests are in visual analytics and tools that help researchers understand complex computational processes.</p><dl class="academic-details"><div><dt>Currently</dt><dd>M.S. student, ISA<br>National Tsing Hua University</dd></div><div><dt>Research group</dt><dd>VM Lab<br>Dr. Shih-Hsuan Hung (Kevin)</dd></div><div><dt>Research experience</dt><dd>First author, Vis4GS<br>IEEE VIS 2026 short paper</dd></div></dl><a class="action-link" href="#research" data-route="research">Explore Vis4GS <span aria-hidden="true">↗</span></a></div></div></section>
 
-    <section class="page-view questions-view" id="questions" data-page aria-labelledby="questions-heading"><div class="page-content questions-layout"><h2 id="questions-heading" tabindex="-1">Research interests.</h2><p class="lead">My interests center on explainable AI (XAI) and visualization.</p><div class="question-copy"><h3>Open to new questions.</h3><p>I’m curious about how visualizations can make AI and complex information easier to explore and understand.</p><p>I’m still exploring directions and enjoy exchanging ideas across topics and disciplines.</p><a class="action-link" href="#contact" data-route="contact">Exchange ideas <span aria-hidden="true">-&gt;</span></a></div></div></section>
+    <section class="page-view questions-view" id="questions" data-page aria-labelledby="questions-heading"><div class="page-content questions-layout"><h2 id="questions-heading" tabindex="-1">Research interests.</h2><p class="lead">My interests center on explainable AI (XAI) and visualization.</p><div class="question-copy"><h3>Open to new questions.</h3><p>I’m curious about how visualizations can make AI and complex information easier to explore and understand.</p><p>I’m still exploring directions and enjoy exchanging ideas across topics and disciplines.</p><a class="action-link" href="#contact" data-route="contact">Exchange ideas <span aria-hidden="true">↗</span></a></div></div></section>
 
-    <section class="page-view life-view" id="off-duty" data-page aria-labelledby="life-heading"><div class="page-content life-layout"><div class="life-intro"><h2 id="life-heading" tabindex="-1">Off duty.</h2><p>Pour-over coffee.<br>Games.<br>A good workout.</p></div><figure class="life-photo"><div class="ascii-frame " style="--columns:37;--rows:15"><pre class="ascii-art" role="img" aria-label="ASCII pour-over dripper, coffee server and kettle">    (  )              .--------.     
-     )(               |  ____  |___  
-  .------.            | /    \ |   \ 
- /::::::::\           | |    | |    |
- \::::::::/           | \____/ |   / 
-  \::::::/            |        |--&#x27;  
-   \::::/        ____/         |     
-    \::/       /____.          |     
------\/-----        |          |     
-   |    |           &#x27;----------&#x27;     
-  /      \                           
- /        \                          
-|~~~~~~~~~~|                         
-|  COFFEE  |                         
-&#x27;----------&#x27;                         </pre></div><figcaption>Pour-over, drawn one character at a time.</figcaption></figure>
+    <section class="page-view life-view" id="off-duty" data-page aria-labelledby="life-heading"><div class="page-content life-layout"><div class="life-intro"><h2 id="life-heading" tabindex="-1">Off duty.</h2><p>Pour-over coffee.<br>Games.<br>A good workout.</p></div><figure class="life-photo"><img src="assets/coffee.webp" alt="An illustrative still life of a blue pour-over dripper, glass server, and steel kettle." width="1536" height="1024"><figcaption>Illustrative coffee still life.</figcaption></figure>
       <section class="coffee-notes" aria-labelledby="coffee-method-heading"><div class="coffee-story"><h3 id="coffee-method-heading">My pour-over routine</h3><p>I placed second in a local pour-over coffee competition in Hsinchu.</p><p class="coffee-measure-note">20 g of coffee · 300 g of water (1:15).<br>The weights below are cumulative water totals.</p></div><ol class="pour-steps"><li><strong>35 <span>g</span></strong><div><h4>Bloom</h4><p>Start with 35 g of water to bloom the coffee.</p></div></li><li><strong>80 <span>g</span></strong><div><h4>Fast pour</h4><p>Pour quickly around the coffee bed until the total reaches 80 g.</p></div></li><li><strong>180 <span>g</span></strong><div><h4>One slow circle</h4><p>Make one slow circle, bringing the total to 180 g.</p></div></li><li><strong>300 <span>g</span></strong><div><h4>One final slow circle</h4><p>Make one more slow circle, finishing at 300 g.</p></div></li></ol></section>
-      <div class="life-bottom"><p>These are a few things I enjoy outside research. If we meet, coffee is a good place to start.</p><a class="action-link" href="#contact" data-route="contact">Say hello <span aria-hidden="true">-&gt;</span></a></div></div></section>
+      <div class="life-bottom"><p>These are a few things I enjoy outside research. If we meet, coffee is a good place to start.</p><a class="action-link" href="#contact" data-route="contact">Say hello <span aria-hidden="true">↗</span></a></div></div></section>
 
-    <section class="page-view contact-view" id="contact" data-page aria-labelledby="contact-heading"><div class="page-content contact-layout"><h2 id="contact-heading" tabindex="-1">Let’s talk.</h2><p class="lead">I’m interested in research work and collaborations in explainable AI and visualization.</p><a class="contact-email" href="mailto:kekn521@gmail.com">kekn521<wbr>@gmail.com <span aria-hidden="true">-&gt;</span></a><ul class="contact-links" aria-label="Contact and profile links"><li><a class="plain-link" href="https://github.com/kekn521">GitHub -&gt;</a></li><li><a class="plain-link" href="https://www.linkedin.com/in/ken521/">LinkedIn -&gt;</a></li><li><a class="plain-link" href="assets/Kai_Yuan_Lin_Research_CV.pdf" download="Kai_Yuan_Lin_Research_CV.pdf" aria-label="Download Kai-Yuan Lin’s CV (PDF)">CV (PDF) v</a></li></ul><div class="contact-signature"><span>Ken Lin</span><span lang="zh-Hant">林楷源</span><p>ISA, National Tsing Hua University<br>VM Lab</p></div></div></section>
+    <section class="page-view contact-view" id="contact" data-page aria-labelledby="contact-heading"><div class="page-content contact-layout"><h2 id="contact-heading" tabindex="-1">Let’s talk.</h2><p class="lead">I’m interested in research work and collaborations in explainable AI and visualization.</p><a class="contact-email" href="mailto:kekn521@gmail.com">kekn521<wbr>@gmail.com <span aria-hidden="true">↗</span></a><ul class="contact-links" aria-label="Contact and profile links"><li><a class="plain-link" href="https://github.com/kekn521">GitHub ↗</a></li><li><a class="plain-link" href="https://www.linkedin.com/in/ken521/">LinkedIn ↗</a></li><li><a class="plain-link" href="assets/Kai_Yuan_Lin_Research_CV.pdf" download="Kai_Yuan_Lin_Research_CV.pdf" aria-label="Download Kai-Yuan Lin’s CV (PDF)">CV (PDF) ↓</a></li></ul><div class="contact-signature"><span>Ken Lin</span><span lang="zh-Hant">林楷源</span><p>ISA, National Tsing Hua University<br>VM Lab</p></div></div></section>
 
     <nav class="fallback-directory" id="directory" aria-label="Website directory"><a href="#home" data-route="home">Home</a><a href="#projects" data-route="projects">Projects</a><a href="#about" data-route="about">About</a><a href="#questions" data-route="questions">Research direction</a><a href="#off-duty" data-route="off-duty">Off duty</a><a href="#contact" data-route="contact">Say hello</a></nav>
   </main>
-  <dialog id="directory-dialog" aria-labelledby="directory-heading"><div class="directory-head"><h2 id="directory-heading">Directory</h2><button type="button" id="directory-close">Close <span aria-hidden="true">x</span></button></div><nav aria-label="Direct navigation"><a href="#home" data-route="home">Home <span>Overview</span></a><a href="#projects" data-route="projects">Projects <span>Research & software</span></a><a href="#about" data-route="about">About <span>NTHU / VM Lab</span></a><a href="#questions" data-route="questions">Research direction <span>XAI & visualization</span></a><a href="#off-duty" data-route="off-duty">Off duty <span>Outside the lab</span></a><a href="#contact" data-route="contact">Say hello <span>Work & collaboration</span></a></nav></dialog>
+  <dialog id="directory-dialog" aria-labelledby="directory-heading"><div class="directory-head"><h2 id="directory-heading">Directory</h2><button type="button" id="directory-close">Close <span aria-hidden="true">×</span></button></div><nav aria-label="Direct navigation"><a href="#home" data-route="home">Home <span>Overview</span></a><a href="#projects" data-route="projects">Projects <span>Research & software</span></a><a href="#about" data-route="about">About <span>NTHU / VM Lab</span></a><a href="#questions" data-route="questions">Research direction <span>XAI & visualization</span></a><a href="#off-duty" data-route="off-duty">Off duty <span>Outside the lab</span></a><a href="#contact" data-route="contact">Say hello <span>Work & collaboration</span></a></nav></dialog>
   <p id="navigation-status" class="sr-only" role="status"></p>
 </body>
 </html>

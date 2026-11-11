@@ -4,13 +4,13 @@
 .js .page-view{background:color-mix(in srgb,var(--bg) 94%,transparent)}
 .background-controls{align-items:center;gap:10px;font-size:11px}
 .background-controls>span{white-space:nowrap}
-.background-controls button{min-width:54px;min-height:36px;white-space:nowrap;flex-shrink:0;padding:0;display:grid;place-items:center;border:1px solid var(--line);border-radius:0}
+.background-controls button{min-width:36px;min-height:36px;display:grid;place-items:center;border:1px solid var(--line);border-radius:3px}
 .background-controls button:hover{background:var(--surface)}
 .background-controls button:disabled{opacity:.45;cursor:default}
 @media(max-width:767px){
   .background-controls{gap:5px;font-size:10px}
   .atlas-tools{padding-inline:12px;gap:8px}
-  .background-controls button{min-width:42px;width:42px;height:36px}
+  .background-controls button{min-width:30px;width:30px;height:36px}
 }
 @media(max-width:360px){
   .background-controls>span{display:none}

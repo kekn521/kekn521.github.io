@@ -12,10 +12,3 @@ Use case: photorealistic-natural. Asset type: editorial still-life for the Off d
 
 ## Waystation
 `waystation.webp`: optimized from the public `kekn521/Waystation` repository, `artifacts/waystation-overview-orbit.png` (Git blob `9e5971dd4bc0ac6ff30dd780c0d41afde6fde810`). The screenshot shows the actual interface with illustrative workspace and service data.
-
-
-## ASCII terminal edition (2026-11-12)
-
-The visible portrait is real character data in `ken-ascii.txt`, derived deterministically from the portrait supplied by Ken on 2026-11-12. `scripts/photo_to_ascii.py` documents the crop and luminance mapping. The original portrait is not included in the public website.
-
-All visible illustrations are ASCII text embedded in `index.html`: the orbital workspace, Vis4GS analysis workflow and genealogy, pour-over equipment, research graph, envelope and name lettering. These are illustrative diagrams, not substitute screenshots or scientific measurements. Original research figures and the Waystation screenshot remain linked from their captions. The favicon and map connections are rendered from text characters in SVG.
