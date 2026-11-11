@@ -20,6 +20,45 @@
   let panY = 0;
   let drag = null;
   let resizeFrame = 0;
+  let pourObserver = null;
+  let pendingEntrance = null;
+
+  /* Motion layer: WAAPI entrance/traces, bounded and cancellable. */
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const trackedMotion = new Set();
+
+  function playMotion(element, keyframes, options) {
+    if (reducedMotion.matches || typeof element.animate !== 'function' || document.hidden) return null;
+    const animation = element.animate(keyframes, {...options, easing:'cubic-bezier(.16,1,.3,1)', fill:'none'});
+    trackedMotion.add(animation);
+    const forget = () => trackedMotion.delete(animation);
+    animation.addEventListener('finish', forget);
+    animation.addEventListener('cancel', forget);
+    return animation;
+  }
+
+  function cancelMotion() {
+    [...trackedMotion].forEach(animation => animation.cancel());
+    trackedMotion.clear();
+  }
+
+  function pathTraceMotion(path, duration) {
+    path.getAnimations().forEach(animation => animation.cancel());
+    return playMotion(path, [
+      {strokeDasharray:'1', strokeDashoffset:1, opacity:.3},
+      {strokeDasharray:'1', strokeDashoffset:0, opacity:1}
+    ], {duration});
+  }
+
+  reducedMotion.addEventListener('change', () => {
+    if (!reducedMotion.matches) return;
+    cancelMotion();
+    releasePourObserver();
+    clearPourStates();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelMotion();
+  });
 
   function routeFromHash() {
     let value;
@@ -30,6 +69,7 @@
   function closeDirectory(restoreFocus = true) {
     if (!dialog.open) return;
     dialog.close();
+    directoryToggle.setAttribute('aria-expanded', 'false');
     if (restoreFocus) (directoryFocus || directoryToggle).focus({preventScroll:true});
   }
 
@@ -37,11 +77,14 @@
     if (dialog.open) return;
     directoryFocus = document.activeElement;
     dialog.showModal();
+    directoryToggle.setAttribute('aria-expanded', 'true');
     document.getElementById('directory-close').focus();
   }
 
   function renderRoute(route, source = null, initial = false) {
     if (route === currentRoute && !initial) return;
+    cancelMotion();
+    pendingEntrance = null;
     const previous = currentRoute;
     currentRoute = route;
     closeDirectory(false);
@@ -73,9 +116,13 @@
     });
     if (isHome) {
       if (!initial || previous) (returnFocus || viewport).focus({preventScroll:true});
+      pendingEntrance = {initial};
       scheduleConnections();
+      releasePourObserver();
     } else {
       document.getElementById(route).querySelector('h2').focus({preventScroll:true});
+      if (route === 'off-duty') setupPourObserver();
+      else releasePourObserver();
     }
     document.getElementById('navigation-status').textContent = isHome ? 'Home overview' : `${labels[route]} opened. Use Home to return to the map.`;
   }
@@ -138,9 +185,40 @@
     });
   }
 
+  // Keep the pending entrance across font/image/resize redraws in the same frame.
   function scheduleConnections() {
     cancelAnimationFrame(resizeFrame);
-    resizeFrame = requestAnimationFrame(drawConnections);
+    resizeFrame = requestAnimationFrame(() => {
+      drawConnections();
+      const entrance = pendingEntrance;
+      pendingEntrance = null;
+      if (entrance && currentRoute === 'home') playHomeEntrance(entrance.initial);
+    });
+  }
+
+  function playHomeEntrance(initial) {
+    const paths = [...scene.querySelectorAll('.connections path')];
+    paths.forEach((path, i) => {
+      path.getAnimations().forEach(animation => animation.cancel());
+      playMotion(path, [
+        {strokeDasharray:'1', strokeDashoffset:1, opacity:.3},
+        {strokeDasharray:'1', strokeDashoffset:0, opacity:1}
+      ], {duration:700, delay:Math.min(i * 35, 140)});
+    });
+    if (initial) {
+      // clip-path never changes layout; only the heading's own paint box is animated.
+      playMotion(atlas.querySelector('.map-identity h1'), [
+        {clipPath:'inset(0 0 100% 0)'},
+        {clipPath:'inset(0 0 0 0)'}
+      ], {duration:700});
+    }
+    scene.querySelectorAll('.destination').forEach((link, i) => {
+      // Move the artwork, leaving link bounds and connector measurements stable.
+      playMotion(link.firstElementChild, [
+        {opacity:.45, translate:'0 12px'},
+        {opacity:1, translate:'0 0'}
+      ], {duration:550, delay:Math.min(i * 45, 180)});
+    });
   }
 
   document.addEventListener('click', event => {
@@ -207,15 +285,50 @@
   viewport.addEventListener('lostpointercapture',endDrag);
   scene.querySelectorAll('.destination').forEach(link => {
     const path = scene.querySelector(`[data-path="${link.dataset.route}"]`);
-    link.addEventListener('mouseenter', () => path.classList.add('is-highlighted'));
-    link.addEventListener('mouseleave', () => path.classList.remove('is-highlighted'));
+    let traceAnimation = null;
+    const updateHighlight = () => path.classList.toggle('is-highlighted', link.matches(':hover, :focus'));
+    const trace = () => {
+      if (traceAnimation) traceAnimation.cancel();
+      traceAnimation = pathTraceMotion(path, 450);
+    };
+    link.addEventListener('pointerenter', event => {
+      updateHighlight();
+      if (event.pointerType !== 'mouse') return;
+      trace();
+    });
+    link.addEventListener('pointerleave', updateHighlight);
     link.addEventListener('focus', () => {
-      path.classList.add('is-highlighted');
+      updateHighlight();
+      trace();
       const a = link.getBoundingClientRect(), b = viewport.getBoundingClientRect();
       if (a.left < b.left || a.right > b.right || a.top < b.top || a.bottom > b.bottom) resetCamera();
     });
-    link.addEventListener('blur', () => path.classList.remove('is-highlighted'));
+    link.addEventListener('blur', updateHighlight);
   });
+
+  function releasePourObserver() {
+    pourObserver?.disconnect();
+    pourObserver = null;
+  }
+
+  function clearPourStates() {
+    document.querySelectorAll('.pour-steps li').forEach(step => step.classList.remove('is-poured'));
+  }
+
+  function setupPourObserver() {
+    releasePourObserver();
+    clearPourStates();
+    if (reducedMotion.matches || !('IntersectionObserver' in window)) return;
+    pourObserver = new IntersectionObserver((entries, observer) => {
+      if (currentRoute !== 'off-duty' || reducedMotion.matches) return;
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-poured');
+        observer.unobserve(entry.target);
+      });
+    }, {root:document.getElementById('off-duty'), threshold:.2});
+    document.querySelectorAll('.pour-steps li').forEach(step => pourObserver.observe(step));
+  }
 
   function setTheme(value) {
     root.dataset.theme = value;
@@ -234,6 +347,8 @@
   window.addEventListener('resize', () => {resetCamera();scheduleConnections();});
   scene.querySelectorAll('img').forEach(image => image.addEventListener('load',scheduleConnections));
   document.fonts?.ready.then(scheduleConnections);
+  scene.querySelectorAll('.connections path').forEach(path => path.setAttribute('pathLength', '1'));
+  directoryToggle.setAttribute('aria-expanded', 'false');
   root.classList.add('js');
   renderRoute(routeFromHash(),null,true);
   updateCamera();

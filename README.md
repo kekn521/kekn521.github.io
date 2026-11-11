@@ -8,13 +8,15 @@ The full-screen atlas is the homepage and directory. Its five destinations open 
 
 Drag empty map space to pan. Plus/minus controls zoom; Reset view restores the overview. With the map focused, arrow keys pan, +/- zoom, and 0 resets. Zoom and pan are bounded. Browser pinch zoom is retained. All content remains visible as a normal document when JavaScript is disabled.
 
-The default is the user's pastel-blue light palette. A manual dark theme persists locally. Reduced motion makes navigation transitions immediate. Typography is self-hosted; no remote fonts or analytics are required.
+The default is the user's pastel-blue light palette. A manual dark theme persists locally. Reduced motion makes navigation transitions immediate. Typography is self-hosted; no remote fonts or analytics are required. The terminal background uses animated ASCII contours with pointer and click responses. A pause control and reduced-motion preferences stop background movement; it also pauses while reading a destination, opening the directory, or hiding the tab.
 
 ## Files and local preview
 
 - `index.html`: factual content and accessible route links.
 - `styles.css`: atlas composition, full-page views, responsive variants, and themes.
 - `app.js`: hash routing, history, focus, directory dialog, camera controls, and theme.
+- `background.js`: terminal canvas animation and its motion controls.
+- `background.css`: background layering and pause control.
 - `assets/`: optimized research figures, illustrative coffee still life, fonts and licenses.
 - `tests/browser.cjs`: browser checks and screenshots.
 
@@ -24,7 +26,7 @@ Open `index.html` directly, or run `python3 -m http.server 4173 --bind 127.0.0.1
 
 GitHub Pages uses GitHub Actions. The workflow runs browser checks first. Only successful runs on `main` deploy. The `design/full-screen-atlas` branch runs tests and saves screenshots without deploying. Screenshots are attached as `portfolio-browser-review` for seven days.
 
-The deployment stages only `index.html`, `styles.css`, `app.js`, `.nojekyll`, and `assets/`. This repository hosts the root domain. The separate `kekn521` repository remains the GitHub profile repository.
+The deployment stages only `index.html`, `styles.css`, `app.js`, `background.js`, `background.css`, `.nojekyll`, and `assets/`. This repository hosts the root domain. The separate `kekn521` repository remains the GitHub profile repository.
 
 ## Content maintenance
 
