@@ -69,6 +69,11 @@ const http = require('node:http');
       for(const route of ['projects','research','about','questions','off-duty','contact']) {
         await page.goto(base+'#'+route);await settle();
         assert.equal(await page.locator('#'+route).isVisible(),true);
+        if(size.width===390){
+          assert.equal(await page.locator('#page-background-pause').isVisible(),true,`${route}: page pause control hidden`);
+          const still=await page.evaluate(()=>document.getElementById('ambient-canvas').toDataURL());
+          await page.waitForFunction(prev=>document.getElementById('ambient-canvas').toDataURL()!==prev,still,{timeout:3000});
+        }
         const headingTop=await page.locator('#'+route+' h2').evaluate(el=>el.getBoundingClientRect().top);
         assert(headingTop>=60,`${size.width}: clipped heading in ${route}: ${headingTop}`);
         assert.equal(await page.locator('#'+route).evaluate(el=>el.scrollWidth<=el.clientWidth+1),true,`${size.width}: overflow in ${route}`);
@@ -76,6 +81,23 @@ const http = require('node:http');
         if(size.width===390 && route==='off-duty'){await page.locator('.coffee-notes').scrollIntoViewIfNeeded();await screenshot('coffee-method-mobile');}
       }
     }
+    await page.setViewportSize({width:1440,height:960});
+    await page.goto(base+'#about');await settle();
+    await page.locator('#page-background-pause').click();
+    assert.equal(await page.locator('#page-background-pause').getAttribute('aria-pressed'),'true');
+    const pausedShot=await page.evaluate(()=>document.getElementById('ambient-canvas').toDataURL());
+    await page.waitForTimeout(150);
+    assert.equal(await page.evaluate(()=>document.getElementById('ambient-canvas').toDataURL()),pausedShot);
+    await page.goto(base+'#projects');await settle();
+    assert.equal(await page.locator('#page-background-pause').getAttribute('aria-pressed'),'true');
+    const pausedProjectsShot=await page.evaluate(()=>document.getElementById('ambient-canvas').toDataURL());
+    await page.waitForTimeout(150);
+    assert.equal(await page.evaluate(()=>document.getElementById('ambient-canvas').toDataURL()),pausedProjectsShot);
+    await page.locator('#page-background-pause').click();
+    await page.waitForFunction(prev=>document.getElementById('ambient-canvas').toDataURL()!==prev,pausedProjectsShot,{timeout:3000});
+    await page.goto(base+'#home');await settle();
+    assert.equal(await page.locator('#background-pause').getAttribute('aria-pressed'),'false');
+    assert.equal(await page.locator('#page-background-pause').isVisible(),false);
     await page.goto(base+'#contact');await settle();
     const [cvDownload]=await Promise.all([page.waitForEvent('download'),page.getByRole('link',{name:'Download Kai-Yuan Lin’s CV (PDF)'}).click()]);
     assert.equal(cvDownload.suggestedFilename(),'Kai_Yuan_Lin_Research_CV.pdf');
@@ -85,6 +107,7 @@ const http = require('node:http');
     assert.deepEqual(downloadedPDF,await fs.readFile('assets/Kai_Yuan_Lin_Research_CV.pdf'));
     await page.emulateMedia({reducedMotion:'reduce'});await page.goto(base+'#about');await settle();
     assert.equal(await page.locator('#about').evaluate(el=>getComputedStyle(el).animationName),'none');
+    assert.equal(await page.locator('#page-background-pause').isDisabled(),true);
     await page.goto(base+'#does-not-exist');await settle();assert.equal(await page.locator('#home').getAttribute('aria-hidden'),'false');
     assert.deepEqual(errors,[]);
     const noJS = await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});

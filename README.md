@@ -8,7 +8,7 @@ The full-screen atlas is the homepage and directory. Its five destinations open 
 
 Drag empty map space to pan. Plus/minus controls zoom; Reset view restores the overview. With the map focused, arrow keys pan, +/- zoom, and 0 resets. Zoom and pan are bounded. Browser pinch zoom is retained. All content remains visible as a normal document when JavaScript is disabled.
 
-The default is the user's pastel-blue light palette. A manual dark theme persists locally. Reduced motion makes navigation transitions immediate. Typography is self-hosted; no remote fonts or analytics are required. The terminal background uses animated ASCII contours with pointer and click responses. A pause control and reduced-motion preferences stop background movement; it also pauses while reading a destination, opening the directory, or hiding the tab.
+The default is the user's pastel-blue light palette. A manual dark theme persists locally. Reduced motion makes navigation transitions immediate. Typography is self-hosted; no remote fonts or analytics are required. The terminal background uses animated ASCII contours with pointer and click responses, and runs in all sections, subtly behind reading text where masked quiet areas keep prose legible. The atlas and page pause controls share one paused state; reduced-motion preferences stop background movement, and it also pauses while the directory dialog is open or the tab is hidden.
 
 ## Files and local preview
 

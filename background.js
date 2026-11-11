@@ -3,6 +3,7 @@
 // Terminal atmosphere for the atlas. Pointer effects never capture or block input.
 (() => {
   const root = document.documentElement;
+  const pauseButtons = [...document.querySelectorAll('#background-pause, #page-background-pause')];
   const pauseButton = document.getElementById('background-pause');
   if (!pauseButton || !root.classList.contains('js')) return;
   const canvas = document.createElement('canvas');
@@ -10,7 +11,7 @@
   canvas.setAttribute('aria-hidden', 'true');
   document.body.prepend(canvas);
   const ctx = canvas.getContext('2d', {alpha:false});
-  if (!ctx) { canvas.remove(); pauseButton.disabled = true; return; }
+  if (!ctx) { canvas.remove(); pauseButtons.forEach(button=>{button.disabled=true;}); return; }
 
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const dialog = document.getElementById('directory-dialog');
@@ -19,12 +20,12 @@
   let bg = [215,231,240], ink = [49,91,128], dark = false;
   let vortices = [];
   let pointer = {x:-1000, y:-1000, active:false};
-  let command = 'explore --map', commandAge = 0;
+  let command = document.body.dataset.route === 'home' ? 'explore --map' : 'open '+document.body.dataset.route+'/', commandAge = 0;
   const glyphs = ' .,:;+=xX#';
   const readingZones = [...document.querySelectorAll('.map-identity, .destination-title, .destination-note')];
   const rgba = (rgb, a) => `rgba(${rgb.join(',')},${a})`;
   const isHome = () => document.body.dataset.route === 'home';
-  const isLive = () => !paused && !reduce.matches && !document.hidden && isHome() && !dialog?.open;
+  const isLive = () => !paused && !reduce.matches && !document.hidden && !dialog?.open;
 
   function readPalette() {
     dark = root.dataset.theme === 'dark';
@@ -49,6 +50,7 @@
 
   // Quiet around the identity; more texture at the perimeter of the atlas.
   function clarity(x,y) {
+    if (!isHome()) return .8;
     const cx = width < 768 ? width*.44 : width*.5;
     const cy = header + (height-header)*.43;
     const dx=(x-cx)/(width*.3), dy=(y-cy)/(height*.22);
@@ -56,16 +58,20 @@
   }
 
   function protectText() {
-    if (!isHome()) return;
-    for (const element of readingZones) {
+    const zones = isHome() ? readingZones
+      : [...(document.getElementById(document.body.dataset.route)?.querySelectorAll('h2,h3,h4,p,dt,dd,figcaption,.action-link,.contact-email') || [])];
+    for (const element of zones) {
       const r=element.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      if (r.bottom<=header || r.top>=height || r.right<=0 || r.left>=width) continue;
       const rx=r.width*.72+25,ry=r.height*.85+18;
       ctx.save();ctx.translate(r.left+r.width/2,r.top+r.height/2);ctx.scale(rx,ry);
       const shade=ctx.createRadialGradient(0,0,0,0,0,1);
       shade.addColorStop(0,rgba(bg,1));shade.addColorStop(.55,rgba(bg,.96));shade.addColorStop(1,rgba(bg,0));
       ctx.fillStyle=shade;ctx.fillRect(-1,-1,2,2);ctx.restore();
     }
-    // Keep the controls on an unbroken paper-colored edge.
+    if (!isHome()) return;
+    // Keep the controls on an unbroken paper-colored edge. The footer lives on home.
     const edge=ctx.createLinearGradient(0,height-100,0,height-55);
     edge.addColorStop(0,rgba(bg,0));edge.addColorStop(1,rgba(bg,1));
     ctx.fillStyle=edge;ctx.fillRect(0,height-100,width,100);
@@ -136,14 +142,16 @@
     if(frame)cancelAnimationFrame(frame);
     frame=0;lastFrame=performance.now();
     const stopped=paused||reduce.matches;
-    pauseButton.disabled=reduce.matches;
-    pauseButton.setAttribute('aria-pressed',String(stopped));
-    pauseButton.setAttribute('aria-label',reduce.matches?'Background motion disabled by reduced-motion preference':paused?'Play background animation':'Pause background animation');
-    pauseButton.querySelector('path').setAttribute('d',stopped?'M6 3l10 7-10 7z':'M7 4v12M13 4v12');
+    for(const button of pauseButtons){
+      button.disabled=reduce.matches;
+      button.setAttribute('aria-pressed',String(stopped));
+      button.setAttribute('aria-label',reduce.matches?'Background motion disabled by reduced-motion preference':paused?'Play background animation':'Pause background animation');
+      button.querySelector('path').setAttribute('d',stopped?'M6 3l10 7-10 7z':'M7 4v12M13 4v12');
+    }
     if(isLive())frame=requestAnimationFrame(tick);
   }
 
-  pauseButton.addEventListener('click',()=>{paused=!paused;sync();});
+  pauseButtons.forEach(button=>button.addEventListener('click',()=>{paused=!paused;sync();}));
   window.addEventListener('pointermove',event=>{
     if(!isLive()||event.clientY<header)return;
     pointer={x:event.clientX,y:event.clientY,active:true};
@@ -161,7 +169,11 @@
     link.addEventListener('pointerenter',update);link.addEventListener('focus',update);
   });
   new MutationObserver(()=>{readPalette();paintStill();sync();}).observe(root,{attributes:true,attributeFilter:['data-theme']});
-  new MutationObserver(()=>{pointer.active=false;vortices=[];sync();}).observe(document.body,{attributes:true,attributeFilter:['data-route']});
+  new MutationObserver(()=>{
+    pointer.active=false;vortices=[];
+    command=isHome()?'explore --map':'open '+document.body.dataset.route+'/';
+    commandAge=0;paintStill();sync();
+  }).observe(document.body,{attributes:true,attributeFilter:['data-route']});
   if(dialog)new MutationObserver(sync).observe(dialog,{attributes:true,attributeFilter:['open']});
   reduce.addEventListener('change',()=>{pointer.active=false;vortices=[];paintStill();sync();});
   document.addEventListener('visibilitychange',sync);
