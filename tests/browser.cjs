@@ -73,6 +73,7 @@ const http = require('node:http');
         assert(headingTop>=60,`${size.width}: clipped heading in ${route}: ${headingTop}`);
         assert.equal(await page.locator('#'+route).evaluate(el=>el.scrollWidth<=el.clientWidth+1),true,`${size.width}: overflow in ${route}`);
         if(size.width===390 && ['projects','research','off-duty'].includes(route)) await screenshot(`${route}-mobile`);
+        if(size.width===390 && route==='off-duty'){await page.locator('.coffee-notes').scrollIntoViewIfNeeded();await screenshot('coffee-method-mobile');}
       }
     }
     await page.emulateMedia({reducedMotion:'reduce'});await page.goto(base+'#about');await settle();
