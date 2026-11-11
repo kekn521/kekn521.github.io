@@ -11,7 +11,7 @@ const http = require('node:http');
       const raw = decodeURIComponent(new URL(req.url,'http://localhost').pathname).replace(/^\/kekn521\//,'/');
       const file = path.resolve(root,'.'+(raw === '/' ? '/index.html' : raw));
       if (!file.startsWith(root+path.sep)) {res.writeHead(403).end();return;}
-      const types = {'.html':'text/html','.css':'text/css','.js':'application/javascript','.webp':'image/webp','.svg':'image/svg+xml','.woff2':'font/woff2','.ttf':'font/ttf'};
+      const types = {'.html':'text/html','.css':'text/css','.js':'application/javascript','.webp':'image/webp','.svg':'image/svg+xml','.woff2':'font/woff2','.ttf':'font/ttf','.pdf':'application/pdf'};
       res.setHeader('Content-Type',types[path.extname(file)] || 'application/octet-stream');
       res.end(await fs.readFile(file));
     } catch {res.writeHead(404).end();}
@@ -76,6 +76,13 @@ const http = require('node:http');
         if(size.width===390 && route==='off-duty'){await page.locator('.coffee-notes').scrollIntoViewIfNeeded();await screenshot('coffee-method-mobile');}
       }
     }
+    await page.goto(base+'#contact');await settle();
+    const [cvDownload]=await Promise.all([page.waitForEvent('download'),page.getByRole('link',{name:'Download Kai-Yuan Lin’s CV (PDF)'}).click()]);
+    assert.equal(cvDownload.suggestedFilename(),'Kai_Yuan_Lin_Research_CV.pdf');
+    assert.equal(await cvDownload.failure(),null);
+    const downloadedPDF=await fs.readFile(await cvDownload.path());
+    assert.equal(downloadedPDF.subarray(0,5).toString(),'%PDF-');
+    assert.deepEqual(downloadedPDF,await fs.readFile('assets/Kai_Yuan_Lin_Research_CV.pdf'));
     await page.emulateMedia({reducedMotion:'reduce'});await page.goto(base+'#about');await settle();
     assert.equal(await page.locator('#about').evaluate(el=>getComputedStyle(el).animationName),'none');
     await page.goto(base+'#does-not-exist');await settle();assert.equal(await page.locator('#home').getAttribute('aria-hidden'),'false');
@@ -85,7 +92,7 @@ const http = require('node:http');
     assert.equal(await plain.locator('[data-page]:visible').count(),6);
     assert.equal(await plain.locator('#directory').isVisible(),true);
     await noJS.close();
-    console.log('PASS: atlas navigation, direct routes, back/forward, Escape, directory focus, camera controls, theme, 3 viewport sizes, reduced motion, assets, and no-JS content.');
+    console.log('PASS: atlas navigation, direct routes, back/forward, Escape, directory focus, camera controls, theme, 3 viewport sizes, reduced motion, assets, CV PDF download, and no-JS content.');
   } catch(error) {
     await screenshot('failure');throw error;
   } finally {await browser.close();await new Promise(resolve=>server.close(resolve));}

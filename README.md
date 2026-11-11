@@ -28,6 +28,6 @@ The deployment stages only `index.html`, `styles.css`, `app.js`, `.nojekyll`, an
 
 ## Content maintenance
 
-Academic standing is time-sensitive. The contact email is kekn521@gmail.com, as supplied by Ken. LinkedIn is https://www.linkedin.com/in/ken521/. The CV entry is plain text until Ken supplies the file; then replace it with a link to the uploaded PDF. The paper entry identifies first authorship without inventing individual contributions. Current research interests make no claim of completed VLA findings. Coffee imagery is illustrative, not a personal photograph. See `assets/ASSETS.md` for the generation prompt, asset sources, and licenses.
+Academic standing is time-sensitive. The contact email is kekn521@gmail.com, as supplied by Ken. LinkedIn is https://www.linkedin.com/in/ken521/. The CV downloads the original PDF from `assets/Kai_Yuan_Lin_Research_CV.pdf`. Replace that file when updating the CV; the Drive original retains its existing sharing settings. The paper entry identifies first authorship without inventing individual contributions. Current research interests make no claim of completed VLA findings. Coffee imagery is illustrative, not a personal photograph. See `assets/ASSETS.md` for the generation prompt, asset sources, and licenses.
 
 Public research source: https://arxiv.org/html/2606.26985v2.
