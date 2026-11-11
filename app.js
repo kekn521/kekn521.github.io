@@ -42,12 +42,11 @@
     trackedMotion.clear();
   }
 
-  function pathTraceMotion(path, duration) {
-    path.getAnimations().forEach(animation => animation.cancel());
-    return playMotion(path, [
-      {strokeDasharray:'1', strokeDashoffset:1, opacity:.3},
-      {strokeDasharray:'1', strokeDashoffset:0, opacity:1}
-    ], {duration});
+  function pathTraceMotion(path, duration, delay = 0) {
+    const text = path.nextElementSibling;
+    if (!text || text.tagName.toLowerCase() !== 'text') return null;
+    text.getAnimations().forEach(animation => animation.cancel());
+    return playMotion(text, [{opacity:.15}, {opacity:1}], {duration, delay});
   }
 
   reducedMotion.addEventListener('change', () => {
@@ -182,6 +181,23 @@
       const end = {x:target.x - dx * endT,y:target.y - dy * endT};
       const path = svg.querySelector(`[data-path="${link.dataset.route}"]`);
       path.setAttribute('d', `M${start.x} ${start.y} C${(start.x+end.x)/2} ${start.y},${(start.x+end.x)/2} ${end.y},${end.x} ${end.y}`);
+      // Text follows the measured connection; the geometry itself is never painted.
+      let letters = path.nextElementSibling;
+      if (!letters || letters.tagName.toLowerCase() !== 'text') {
+        letters = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        path.after(letters);
+      }
+      const length = path.getTotalLength();
+      const glyphs = [];
+      for (let distance = 7, i = 0; distance < length; distance += 14, i++) {
+        const point = path.getPointAtLength(distance);
+        const glyph = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+        glyph.setAttribute('x', point.x);
+        glyph.setAttribute('y', point.y);
+        glyph.textContent = i % 6 === 0 ? '+' : '.';
+        glyphs.push(glyph);
+      }
+      letters.replaceChildren(...glyphs);
     });
   }
 
@@ -198,13 +214,7 @@
 
   function playHomeEntrance(initial) {
     const paths = [...scene.querySelectorAll('.connections path')];
-    paths.forEach((path, i) => {
-      path.getAnimations().forEach(animation => animation.cancel());
-      playMotion(path, [
-        {strokeDasharray:'1', strokeDashoffset:1, opacity:.3},
-        {strokeDasharray:'1', strokeDashoffset:0, opacity:1}
-      ], {duration:700, delay:Math.min(i * 35, 140)});
-    });
+    paths.forEach((path, i) => pathTraceMotion(path, 700, Math.min(i * 35, 140)));
     if (initial) {
       // clip-path never changes layout; only the heading's own paint box is animated.
       playMotion(atlas.querySelector('.map-identity h1'), [
