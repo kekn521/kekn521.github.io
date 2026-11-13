@@ -145,3 +145,33 @@ dialog nav a:hover,dialog nav a:focus-visible{translate:5px 0}
 }
 
 @media(min-width:361px) and (max-width:767px){.background-controls>.map-interaction-hint{font-size:0}.map-interaction-hint:after{content:"Drag to explore";font-size:10px}}
+
+/* Custom line art: one drawing language for every branch, with compact hit areas. */
+.map-scene .destination{width:max-content;max-width:25%}
+.map-scene .destination-news{width:220px;max-width:23%}
+.map-scene .node-symbol{display:block;width:112px;height:94px;max-width:100%;margin:0 0 14px;color:var(--accent);transform:none;box-shadow:none;border-radius:0;overflow:visible;transition:transform .35s var(--ease)}
+.map-scene .destination:hover .node-symbol,.map-scene .destination:focus-visible .node-symbol{transform:translateY(-3px)}
+@media(max-width:1024px){.map-scene .node-symbol{width:86px;height:72px;margin-bottom:12px}}
+@media(max-width:767px){
+ .map-scene .destination{max-width:42%}
+ .map-scene .destination-contact{max-width:26%}
+ .map-scene .node-symbol{width:60px;height:50px;margin-bottom:10px}
+ .map-scene .destination-news{width:43%;max-width:43%}
+ .map-scene .destination-news .node-symbol{position:absolute;left:0;top:1px;width:40px;height:34px;margin:0}
+ .map-scene .destination-news .destination-title,.map-scene .destination-news .latest-news-title{margin-left:48px}
+ .map-scene .destination-news .destination-title{font-size:19px}
+}
+@media(max-height:700px) and (max-width:767px){
+ .map-scene .node-symbol{width:48px;height:40px;margin-bottom:8px}
+ .map-scene .destination-news .node-symbol{width:34px;height:29px}
+ .map-scene .destination-news .destination-title,.map-scene .destination-news .latest-news-title{margin-left:41px}
+ .map-scene .destination-news .destination-title{font-size:18px}
+}
+@media(max-height:650px) and (min-width:768px){
+ .map-scene .node-symbol{width:48px;height:40px;margin-bottom:8px}
+ .map-scene .destination-news{width:23%;max-width:23%}
+ .map-scene .destination-news .node-symbol{position:absolute;left:0;top:1px;width:40px;height:34px;margin:0}
+ .map-scene .destination-news .destination-title,.map-scene .destination-news .latest-news-title{margin-left:48px}
+ .map-scene .destination-contact .node-symbol{width:36px;height:30px}
+}
+@media(prefers-reduced-motion:reduce){.map-scene .destination:hover .node-symbol,.map-scene .destination:focus-visible .node-symbol{transform:none}}

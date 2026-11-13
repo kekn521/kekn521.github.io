@@ -12,6 +12,13 @@ ROOT = Path(__file__).resolve().parents[1]
 MONTHS = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
 FIELDS = {'date', 'category', 'kind', 'title', 'summary', 'url', 'linkLabel'}
 
+NEWS_SYMBOL = ('<svg class="node-symbol news-object" viewBox="0 0 96 80" fill="none" stroke="currentColor" stroke-width="2" '
+               'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
+               '<path d="M13 10h59v58H13Z" fill="var(--surface)"/>'
+               '<path d="M72 20h12v42a6 6 0 0 1-6 6H66M22 21h41"/>'
+               '<path d="M22 31h16v16H22Z" fill="currentColor" fill-opacity=".12"/>'
+               '<path d="M46 32h17M46 39h17M46 46h17M22 56h41"/></svg>')
+
 
 def date_parts(value):
     if not isinstance(value, str) or not re.fullmatch(r'[0-9]{4}(?:-[0-9]{2}(?:-[0-9]{2})?)?', value):
@@ -64,7 +71,7 @@ def render(entries):
     entries = validate(entries)
     if not entries:
         return ('<p class="news-empty">Updates will appear here.</p>',
-                '<a class="destination destination-news latest-news" href="#news" data-route="news" draggable="false" aria-describedby="node-drag-help"><svg class="news-object" viewBox="0 0 80 58" aria-hidden="true" focusable="false"><rect x="4" y="3" width="62" height="49" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><path d="M66 12h9v35a5 5 0 0 1-5 5H61" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M13 13h44" stroke="currentColor" stroke-width="3"/><rect x="13" y="22" width="17" height="14" fill="currentColor" opacity=".18"/><path d="M37 23h20M37 29h20M37 35h20M13 43h44" stroke="currentColor" stroke-width="1.5"/></svg><span class="destination-title">News <span aria-hidden="true">↗</span></span><span class="destination-note latest-news-title">Research &amp; life updates</span></a>')
+                f'<a class="destination destination-news latest-news" href="#news" data-route="news" draggable="false" aria-describedby="node-drag-help">{NEWS_SYMBOL}<span class="destination-title">News <span aria-hidden="true">↗</span></span><span class="destination-note latest-news-title">Research &amp; life updates</span></a>')
     rows = []
     for index, item in enumerate(entries):
         kind = ' · ' + escape(item['kind']) if item.get('kind') else ''
@@ -73,7 +80,7 @@ def render(entries):
             link = f'<a class="plain-link news-link" href="{escape(item["url"], quote=True)}">{escape(item.get("linkLabel", "Read more"))} <span aria-hidden="true">↗</span></a>'
         rows.append(f'<li><article class="news-entry" aria-labelledby="news-title-{index}"><div class="news-date"><time datetime="{item["date"]}">{date_label(item["date"])}</time></div><div class="news-copy"><p class="news-meta">{escape(item["category"])}{kind}</p><h3 id="news-title-{index}">{escape(item["title"])}</h3><p class="news-summary">{escape(item["summary"])}</p>{link}</div></article></li>')
     title = escape(entries[0]['title'])
-    latest = f'<a class="destination destination-news latest-news" href="#news" data-route="news" draggable="false" aria-describedby="node-drag-help"><svg class="news-object" viewBox="0 0 80 58" aria-hidden="true" focusable="false"><rect x="4" y="3" width="62" height="49" rx="2" fill="var(--surface)" stroke="currentColor" stroke-width="1.5"/><path d="M66 12h9v35a5 5 0 0 1-5 5H61" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M13 13h44" stroke="currentColor" stroke-width="3"/><rect x="13" y="22" width="17" height="14" fill="currentColor" opacity=".18"/><path d="M37 23h20M37 29h20M37 35h20M13 43h44" stroke="currentColor" stroke-width="1.5"/></svg><span class="destination-title">News <span aria-hidden="true">↗</span></span><span class="destination-note latest-news-title">{title}</span></a>'
+    latest = f'<a class="destination destination-news latest-news" href="#news" data-route="news" draggable="false" aria-describedby="node-drag-help">{NEWS_SYMBOL}<span class="destination-title">News <span aria-hidden="true">↗</span></span><span class="destination-note latest-news-title">{title}</span></a>'
     return '<ol class="news-list">\n' + '\n'.join(rows) + '\n</ol>', latest
 
 
