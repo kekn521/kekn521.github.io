@@ -210,7 +210,7 @@
     });
   }
 
-  // A small, sleeping spring simulation in scene coordinates. CSS owns the rest layout.
+  // A sleeping contact simulation. Positions change only through dragging or collisions.
   function createNodePhysics() {
     const nodes = [...scene.querySelectorAll('.destination')].map(el => ({el,x:0,y:0,vx:0,vy:0,box:null}));
     let frame = 0, lastTime = 0, quietFrames = 0, held = null, blockedClick = null;
@@ -278,8 +278,8 @@
       for (let step=0;step<steps;step++) {
         nodes.forEach(node => {
           if (held?.node===node) return;
-          node.vx=(node.vx-node.x*38*dt)*Math.exp(-7.5*dt);
-          node.vy=(node.vy-node.y*38*dt)*Math.exp(-7.5*dt);
+          node.vx*=Math.exp(-7.5*dt);
+          node.vy*=Math.exp(-7.5*dt);
           node.x+=node.vx*dt;node.y+=node.vy*dt;
         });
         contacts();
@@ -287,7 +287,7 @@
       const quiet=nodes.every((node,i)=>Math.hypot(node.x-before[i].x,node.y-before[i].y)<.025 && Math.hypot(node.vx,node.vy)<1.5);
       quietFrames=quiet?quietFrames+1:0;
       if (!held && quietFrames>12) {
-        nodes.forEach(node=>{node.vx=node.vy=0;if(Math.hypot(node.x,node.y)<.25)node.x=node.y=0;});
+        nodes.forEach(node=>{node.vx=node.vy=0;});
       } else frame=requestAnimationFrame(tick);
       paint();
     }
@@ -301,7 +301,8 @@
       active.node.el.classList.remove('is-node-held');
       viewport.classList.remove('is-node-dragging');
       if (active.moved) blockedClick=active.node.el;
-      if (cancelled || performance.now()-active.lastMove>100 || reducedMotion.matches) active.node.vx=active.node.vy=0;
+      // Release fixes the drop position; only subsequent contact can displace it.
+      active.node.vx=active.node.vy=0;
       if (active.node.el.hasPointerCapture(active.id)) active.node.el.releasePointerCapture(active.id);
       if (active.moved && !cancelled) {
         active.node.el.focus({preventScroll:true});

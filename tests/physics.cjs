@@ -28,14 +28,17 @@ module.exports = async function verifyPhysics(page, base) {
   await page.waitForTimeout(120);
   assert(Math.hypot(...await offset('.destination-questions'))>10,'a dragged node pushes its neighbor');
   await page.mouse.up();
-  // Momentum changes the released position, then the solver sleeps at a stable arrangement.
-  await reset();await move('.destination-news',65,-25);await page.mouse.up();
-  const released=await offset('.destination-news');
+  // Nodes stay exactly where dropped; physics only resolves collisions.
+  await reset();await move('.destination-news',40,10);await page.mouse.up();
+  const dropped=await offset('.destination-news');
+  assert(Math.hypot(...dropped)>20,'dropped node keeps its placement');
   await page.waitForTimeout(180);
-  assert(Math.hypot(...(await offset('.destination-news')).map((v,i)=>v-released[i]))>1,'release has spring motion');
-  await page.waitForTimeout(4200);
-  const settled=await offset('.destination-news');await page.waitForTimeout(250);
-  assert(Math.hypot(...(await offset('.destination-news')).map((v,i)=>v-settled[i]))<.2,'spring settles');
+  assert.deepEqual(await offset('.destination-news'),dropped,'stationary drop holds after release');
+  await page.waitForTimeout(1200);
+  assert.deepEqual(await offset('.destination-news'),dropped,'stationary drop holds over time');
+  await page.locator('.destination-news').click();await page.waitForTimeout(850);
+  await page.keyboard.press('Escape');await page.waitForTimeout(850);
+  assert.deepEqual(await offset('.destination-news'),dropped,'navigation preserves placement');
   await reset();
   assert((await page.locator('.destination').evaluateAll(els=>els.map(el=>el.style.translate))).every(value=>value.split(' ').every(part=>parseFloat(part)===0)),'Reset restores every node');
   // Camera scale is accounted for: screen movement remains equal to pointer movement.
@@ -51,6 +54,12 @@ module.exports = async function verifyPhysics(page, base) {
   const paused=await offset('.destination-news');await page.waitForTimeout(200);
   assert.deepEqual(await offset('.destination-news'),paused,'Directory pauses physics');
   await page.keyboard.press('Escape');await reset();
+  await page.locator('.destination-news').focus();
+  await page.keyboard.press('Alt+ArrowLeft');
+  const nudged=await offset('.destination-news');await page.waitForTimeout(200);
+  assert.deepEqual(await offset('.destination-news'),nudged,'keyboard nudge stays put');
+  assert(Math.hypot(...nudged)>20,'keyboard nudge displaces the node');
+  await reset();
   await page.emulateMedia({reducedMotion:'reduce'});
   await move('.destination-news',35,20);await page.mouse.up();
   const still=await offset('.destination-news');await page.waitForTimeout(200);
@@ -72,10 +81,15 @@ module.exports = async function verifyPhysics(page, base) {
     const client=await mobile.newCDPSession(touch);
     const r=await touch.locator('.destination-news').boundingBox();const x=r.x+r.width/2,y=r.y+r.height/2;
     await client.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});
-    for(let i=1;i<=8;i++)await client.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+3*i,y:y-5*i}]});
+    for(let i=1;i<=8;i++)await client.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x-2*i,y:y-2*i}]});
+    // Touch moves may be coalesced until the next browser frame.
+    await touch.waitForFunction(()=>{const [x,y=0]=getComputedStyle(document.querySelector('.destination-news')).translate.split(' ').map(parseFloat);return x<=-15 && y<=-15;});
     const translated=await touch.locator('.destination-news').evaluate(el=>el.style.translate.split(' ').map(parseFloat));
     assert(Math.hypot(...translated)>20,'touch moves News node');
     await client.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+    const resting=await touch.locator('.destination-news').evaluate(el=>el.style.translate);
+    await touch.waitForTimeout(250);
+    assert.equal(await touch.locator('.destination-news').evaluate(el=>el.style.translate),resting,'touch drop stays put');
     assert.equal(await touch.locator('#home').getAttribute('aria-hidden'),'false','touch drag does not navigate');
     await touch.locator('#reset-view').tap();await touch.waitForTimeout(550);
     const b=await touch.locator('.destination-news').boundingBox();
@@ -87,5 +101,5 @@ module.exports = async function verifyPhysics(page, base) {
     await touch.locator('.destination-news').tap();await touch.waitForTimeout(850);
     assert.equal(await touch.locator('#news').isVisible(),true,'touch tap still navigates');
   } finally {await mobile.close();}
-  console.log('PASS: all six draggable nodes, connectors, camera isolation, spring settling, bounds, zoom, modal pause, reset, keyboard, reduced motion, touch and cancellation.');
+  console.log('PASS: all six draggable nodes, connectors, camera isolation, stationary drops and collisions, bounds, zoom, modal pause, reset, keyboard, reduced motion, touch and cancellation.');
 };
