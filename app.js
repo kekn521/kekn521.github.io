@@ -26,6 +26,7 @@
   /* Motion layer: WAAPI entrance/traces, bounded and cancellable. */
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   const trackedMotion = new Set();
+  const nodePhysics = createNodePhysics();
 
   function playMotion(element, keyframes, options) {
     if (reducedMotion.matches || typeof element.animate !== 'function' || document.hidden) return null;
@@ -70,12 +71,14 @@
     if (!dialog.open) return;
     dialog.close();
     directoryToggle.setAttribute('aria-expanded', 'false');
+    nodePhysics.wake();
     if (restoreFocus) (directoryFocus || directoryToggle).focus({preventScroll:true});
   }
 
   function openDirectory() {
     if (dialog.open) return;
     directoryFocus = document.activeElement;
+    nodePhysics.stop();
     dialog.showModal();
     directoryToggle.setAttribute('aria-expanded', 'true');
     document.getElementById('directory-close').focus();
@@ -85,6 +88,7 @@
     if (route === currentRoute && !initial) return;
     cancelMotion();
     pendingEntrance = null;
+    nodePhysics.stop();
     const previous = currentRoute;
     currentRoute = route;
     closeDirectory(false);
@@ -155,7 +159,7 @@
     updateCamera();
   }
 
-  function resetCamera() { zoom = 1; panX = 0; panY = 0; updateCamera(); }
+  function resetCamera() { zoom = 1; panX = 0; panY = 0; updateCamera(); nodePhysics.reset(); }
 
   function drawConnections() {
     if (currentRoute !== 'home') return;
@@ -181,7 +185,15 @@
       const start = {x:origin.x + dx * startT,y:origin.y + dy * startT};
       const end = {x:target.x - dx * endT,y:target.y - dy * endT};
       const path = svg.querySelector(`[data-path="${link.dataset.route}"]`);
-      path.setAttribute('d', `M${start.x} ${start.y} C${(start.x+end.x)/2} ${start.y},${(start.x+end.x)/2} ${end.y},${end.x} ${end.y}`);
+      if (width < 768 && link.dataset.route === 'news' && target.y > origin.y + origin.h/2 + 20 && target.x < origin.x) {
+        // Route the lower News branch around the Research node on narrow screens.
+        const fromX = origin.x - origin.w/2 - 12;
+        const toX = target.x - target.w/2 - 10;
+        const gutter = Math.max(4, Math.min(fromX,toX) - 12);
+        path.setAttribute('d', `M${fromX} ${origin.y} C${gutter} ${origin.y},${gutter} ${target.y},${toX} ${target.y}`);
+      } else {
+        path.setAttribute('d', `M${start.x} ${start.y} C${(start.x+end.x)/2} ${start.y},${(start.x+end.x)/2} ${end.y},${end.x} ${end.y}`);
+      }
     });
   }
 
@@ -189,11 +201,179 @@
   function scheduleConnections() {
     cancelAnimationFrame(resizeFrame);
     resizeFrame = requestAnimationFrame(() => {
+      nodePhysics.measure();
       drawConnections();
+      nodePhysics.wake();
       const entrance = pendingEntrance;
       pendingEntrance = null;
       if (entrance && currentRoute === 'home') playHomeEntrance(entrance.initial);
     });
+  }
+
+  // A small, sleeping spring simulation in scene coordinates. CSS owns the rest layout.
+  function createNodePhysics() {
+    const nodes = [...scene.querySelectorAll('.destination')].map(el => ({el,x:0,y:0,vx:0,vy:0,box:null}));
+    let frame = 0, lastTime = 0, quietFrames = 0, held = null, blockedClick = null;
+    let width = 0, height = 0, identity = null;
+    const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
+    const center = node => ({x:node.box.x+node.x,y:node.box.y+node.y,w:node.box.w,h:node.box.h});
+    const live = () => currentRoute === 'home' && !document.hidden && !dialog.open;
+
+    function measure() {
+      const bounds = scene.getBoundingClientRect();
+      width = scene.clientWidth; height = scene.clientHeight;
+      if (!bounds.width || !bounds.height) return;
+      const box = el => {
+        const r = el.getBoundingClientRect();
+        return {x:(r.left+r.width/2-bounds.left)*width/bounds.width,y:(r.top+r.height/2-bounds.top)*height/bounds.height,w:r.width*width/bounds.width,h:r.height*height/bounds.height};
+      };
+      identity = box(scene.querySelector('.map-identity'));
+      nodes.forEach(node => {node.box=box(node.el);node.box.x-=node.x;node.box.y-=node.y;});
+    }
+    function paint() {
+      nodes.forEach(node => {node.el.style.translate=`${node.x.toFixed(3)}px ${node.y.toFixed(3)}px`;});
+      drawConnections();
+    }
+    function bound(node) {
+      const b = node.box;
+      const x = clamp(node.x,Math.min(0,8+b.w/2-b.x),Math.max(0,width-8-b.w/2-b.x));
+      const y = clamp(node.y,Math.min(0,8+b.h/2-b.y),Math.max(0,height-8-b.h/2-b.y));
+      if (x !== node.x) node.vx *= -.25;
+      if (y !== node.y) node.vy *= -.25;
+      node.x=x;node.y=y;
+    }
+    // Rectangle contact resolves along the shallowest axis, then exchanges normal velocity.
+    function separate(a,b,fixedBox=null) {
+      const p=center(a), q=fixedBox || center(b);
+      const overlapX=(p.w+q.w)/2+8-Math.abs(p.x-q.x);
+      const overlapY=(p.h+q.h)/2+8-Math.abs(p.y-q.y);
+      if (overlapX<=0 || overlapY<=0) return;
+      const axis=overlapX<overlapY?'x':'y', speed=axis==='x'?'vx':'vy';
+      const sign=p[axis]>=q[axis]?1:-1, overlap=Math.min(overlapX,overlapY);
+      const ma=held?.node===a?0:1, mb=!b || held?.node===b?0:1, mass=ma+mb;
+      if (!mass) return;
+      a[axis]+=sign*overlap*ma/mass;
+      if (b) b[axis]-=sign*overlap*mb/mass;
+      const relative=(a[speed]-(b?.[speed] || 0))*sign;
+      if (relative<0) {
+        const impulse=-1.2*relative/mass;
+        a[speed]+=sign*impulse*ma;
+        if (b) b[speed]-=sign*impulse*mb;
+      }
+    }
+    function contacts() {
+      for (let pass=0;pass<3;pass++) {
+        nodes.forEach(node => {if (identity) separate(node,null,identity);});
+        for (let i=0;i<nodes.length;i++) for (let j=i+1;j<nodes.length;j++) separate(nodes[i],nodes[j]);
+        nodes.forEach(bound);
+      }
+    }
+    function tick(now) {
+      frame=0;
+      if (!live() || reducedMotion.matches) return;
+      const elapsed=lastTime?Math.min((now-lastTime)/1000,1/30):1/60;
+      lastTime=now;
+      const before=nodes.map(node=>({x:node.x,y:node.y}));
+      const steps=Math.ceil(elapsed/(1/120)), dt=elapsed/steps;
+      for (let step=0;step<steps;step++) {
+        nodes.forEach(node => {
+          if (held?.node===node) return;
+          node.vx=(node.vx-node.x*38*dt)*Math.exp(-7.5*dt);
+          node.vy=(node.vy-node.y*38*dt)*Math.exp(-7.5*dt);
+          node.x+=node.vx*dt;node.y+=node.vy*dt;
+        });
+        contacts();
+      }
+      const quiet=nodes.every((node,i)=>Math.hypot(node.x-before[i].x,node.y-before[i].y)<.025 && Math.hypot(node.vx,node.vy)<1.5);
+      quietFrames=quiet?quietFrames+1:0;
+      if (!held && quietFrames>12) {
+        nodes.forEach(node=>{node.vx=node.vy=0;if(Math.hypot(node.x,node.y)<.25)node.x=node.y=0;});
+      } else frame=requestAnimationFrame(tick);
+      paint();
+    }
+    function wake() {
+      quietFrames=0;
+      if (!frame && live() && !reducedMotion.matches) {lastTime=0;frame=requestAnimationFrame(tick);}
+    }
+    function finish(event,cancelled=false) {
+      if (!held || (event && event.pointerId!==held.id)) return;
+      const active=held;held=null;
+      active.node.el.classList.remove('is-node-held');
+      viewport.classList.remove('is-node-dragging');
+      if (active.moved) blockedClick=active.node.el;
+      if (cancelled || performance.now()-active.lastMove>100 || reducedMotion.matches) active.node.vx=active.node.vy=0;
+      if (active.node.el.hasPointerCapture(active.id)) active.node.el.releasePointerCapture(active.id);
+      if (active.moved && !cancelled) {
+        active.node.el.focus({preventScroll:true});
+        document.getElementById('navigation-status').textContent='Node moved. Press Enter to open it, or Reset view to restore the map.';
+      }
+      if (reducedMotion.matches) {contacts();paint();} else wake();
+    }
+    function stop() {
+      finish(null,true);
+      cancelAnimationFrame(frame);frame=0;lastTime=0;
+      nodes.forEach(node=>{node.vx=node.vy=0;});
+    }
+    function reset() {
+      stop();
+      nodes.forEach(node=>{node.x=node.y=0;node.el.style.translate='0px 0px';});
+      measure();drawConnections();
+    }
+    nodes.forEach(node => {
+      const el=node.el;
+      el.addEventListener('dragstart',event=>event.preventDefault());
+      el.addEventListener('pointerdown',event=>{
+        if (!event.isPrimary || event.button!==0 || held || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey || !live()) return;
+        blockedClick=null;
+        viewport.classList.add('is-node-dragging');
+        measure();
+        node.vx=node.vy=0;
+        const bounds=scene.getBoundingClientRect();
+        held={node,id:event.pointerId,startX:event.clientX,startY:event.clientY,x:node.x,y:node.y,scaleX:width/bounds.width,scaleY:height/bounds.height,lastMove:performance.now(),moved:false};
+        // Capture immediately so a fast flick cannot outrun a small node.
+        el.setPointerCapture(event.pointerId);
+        event.stopPropagation();
+      });
+      el.addEventListener('pointermove',event=>{
+        if (!held || held.node!==node || event.pointerId!==held.id) return;
+        const dx=event.clientX-held.startX,dy=event.clientY-held.startY;
+        if (!held.moved && Math.hypot(dx,dy)<6) return;
+        event.preventDefault();
+        if (!held.moved) {
+          held.moved=true;el.setPointerCapture(event.pointerId);
+          el.classList.add('is-node-held');viewport.classList.add('is-node-dragging');
+        }
+        const now=performance.now(),dt=Math.max((now-held.lastMove)/1000,1/120);
+        const x=held.x+dx*held.scaleX,y=held.y+dy*held.scaleY;
+        node.vx=clamp((x-node.x)/dt,-900,900);node.vy=clamp((y-node.y)/dt,-900,900);
+        node.x=x;node.y=y;held.lastMove=now;
+        bound(node);
+        if (reducedMotion.matches) contacts();
+        paint();wake();
+      });
+      el.addEventListener('pointerup',event=>finish(event));
+      el.addEventListener('pointercancel',event=>finish(event,true));
+      el.addEventListener('lostpointercapture',event=>finish(event,true));
+      el.addEventListener('keydown',event=>{
+        if (event.key==='0') {event.preventDefault();resetCamera();return;}
+        if (!event.altKey || event.ctrlKey || event.metaKey) return;
+        const moves={ArrowLeft:[-32,0],ArrowRight:[32,0],ArrowUp:[0,-32],ArrowDown:[0,32]};
+        if (!moves[event.key]) return;
+        event.preventDefault();measure();node.x+=moves[event.key][0];node.y+=moves[event.key][1];
+        node.vx=node.vy=0;bound(node);contacts();paint();wake();
+      });
+    });
+    // Block only the synthetic click from a completed drag, never keyboard activation.
+    scene.addEventListener('click',event=>{
+      if (event.detail && blockedClick && blockedClick.contains(event.target)) {
+        event.preventDefault();event.stopPropagation();blockedClick=null;
+      }
+    },true);
+    window.addEventListener('pointerup',event=>finish(event));
+    window.addEventListener('blur',stop);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else wake();});
+    reducedMotion.addEventListener('change',()=>{stop();if(!reducedMotion.matches)wake();});
+    return {measure,wake,stop,reset};
   }
 
   function playHomeEntrance(initial) {

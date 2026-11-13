@@ -85,7 +85,7 @@ dialog nav a:hover,dialog nav a:focus-visible{translate:5px 0}
   dialog nav a:hover,dialog nav a:focus-visible{translate:none}
 }
 
-/* News: compact Latest update teaser on the atlas and the chronological #news feed. */
+/* News preview text and the chronological #news feed. */
 .latest-news{display:block;pointer-events:auto;width:fit-content;max-width:min(32ch,100%);min-height:44px;margin:20px 0 0 9px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;line-height:1.45;color:var(--ink)}
 .latest-news-label{display:block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
 .latest-news-title{display:block;font-size:inherit}
@@ -110,3 +110,38 @@ dialog nav a:hover,dialog nav a:focus-visible{translate:5px 0}
 
 /* Keep future long headlines within the atlas preview. */
 .latest-news-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+
+/* Six branches; independent translation lets the simulation preserve each object's tilt. */
+.destination-news.latest-news{left:6%;top:44%;bottom:auto;right:auto;width:23%;max-width:25%;margin:0;padding:0;border:0;transform:rotate(-3deg);line-height:1.45}
+.news-object{display:block;font-family:Atlas Text,monospace;font-size:clamp(30px,3.7vw,52px);letter-spacing:-.08em;line-height:1.1;margin-bottom:12px;color:var(--accent)}
+.destination-news .latest-news-title{font-size:10px;line-height:1.5;margin-top:6px;max-width:28ch}
+.js .destination{touch-action:none;cursor:grab;translate:0 0}
+.js .destination:active,.js .destination.is-node-held{cursor:grabbing}
+.js .destination.is-node-held{z-index:2}
+.js .is-node-dragging .map-scene{transition:none}
+.js .is-node-dragging .destination-title{text-decoration:none}
+@media(max-width:1024px){.destination-news.latest-news{left:5%;width:23%;max-width:25%;top:44%}.news-object{font-size:35px}}
+@media(max-width:767px){
+ .destination-news.latest-news{left:8%;top:auto;bottom:2%;width:43%;max-width:43%;min-height:55px}
+ .destination-news .news-object{display:none}
+ .destination-news .destination-title{font-size:20px}
+ .destination-news .latest-news-title{font-size:8px;max-width:25ch;margin-top:5px}
+ .destination-questions{bottom:21%}
+ .destination-life{bottom:10%}
+ .map-identity{top:44%;left:40%;width:56%}
+}
+@media(max-height:700px) and (max-width:767px){
+ .destination-questions{bottom:21%}
+ .destination-life{bottom:11%}
+ .destination-news.latest-news{bottom:2%;min-height:52px}
+ .map-identity{top:44%;left:40%;width:56%}
+}
+@media(max-height:650px) and (min-width:768px){
+ .destination-news.latest-news{left:40%;top:auto;bottom:2%;width:23%;max-width:23%;min-height:50px}
+ .destination-news .news-object{display:none}
+ .destination-news .destination-title{font-size:19px}
+ .destination-news .latest-news-title{font-size:8px;max-width:28ch}
+ .map-identity{top:40%}
+}
+
+@media(min-width:361px) and (max-width:767px){.background-controls>.map-interaction-hint{font-size:0}.map-interaction-hint:after{content:"Drag to explore";font-size:10px}}

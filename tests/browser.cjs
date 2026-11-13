@@ -30,7 +30,7 @@ const http = require('node:http');
   try {
     await page.goto(base);await settle();await screenshot('atlas-desktop');
     assert.equal(await page.locator('[data-page]:visible').count(),0);
-    assert.equal(await page.locator('.destination:visible').count(),5);
+    assert.equal(await page.locator('.destination:visible').count(),6);
     await page.getByRole('button',{name:'Zoom in',exact:true}).click();
     assert.equal(await page.locator('#zoom-level').textContent(),'110%');
     await page.getByRole('button',{name:'Reset view',exact:true}).click();
@@ -84,7 +84,7 @@ const http = require('node:http');
       const latestBox=await page.locator('.latest-news').evaluate(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};});
       assert(latestBox.height>=44,`${size.width}: latest news link too small: ${JSON.stringify(latestBox)}`);
       assert(latestBox.left>=-2 && latestBox.right<=size.width+2 && latestBox.top>=0 && latestBox.bottom<=size.height,`${size.width}: latest news link outside viewport: ${JSON.stringify(latestBox)}`);
-      for(const node of geometry){assert(latestBox.right<=node.left||node.right<=latestBox.left||latestBox.bottom<=node.top||node.bottom<=latestBox.top,`${size.width}: latest news link overlaps ${node.name}: ${JSON.stringify(latestBox)} vs ${JSON.stringify(node)}`);}
+      for(const node of geometry){if(node.name==='news')continue;assert(latestBox.right<=node.left||node.right<=latestBox.left||latestBox.bottom<=node.top||node.bottom<=latestBox.top,`${size.width}: latest news link overlaps ${node.name}: ${JSON.stringify(latestBox)} vs ${JSON.stringify(node)}`);}
       for(const route of ['news','projects','research','about','questions','off-duty','contact']) {
         await page.goto(base+'#'+route);await settle();
         assert.equal(await page.locator('#'+route).isVisible(),true);
@@ -136,7 +136,9 @@ const http = require('node:http');
     assert.equal(await plain.locator('#news article').count(),newsData.length);
     assert.equal(await plain.locator('#directory').isVisible(),true);
     await noJS.close();
-    console.log('PASS: atlas navigation, News via Latest link and Directory, direct routes, back/forward, Escape, directory focus, camera controls, theme, 3 viewport sizes, reduced motion, assets, CV PDF download, and no-JS content.');
+    await page.emulateMedia({reducedMotion:'no-preference'});
+    await require('./physics.cjs')(page,base);
+    console.log('PASS: atlas navigation, News via News branch and Directory, direct routes, back/forward, Escape, directory focus, camera controls, theme, 3 viewport sizes, reduced motion, assets, CV PDF download, and no-JS content.');
   } catch(error) {
     await screenshot('failure');throw error;
   } finally {await browser.close();await new Promise(resolve=>server.close(resolve));}

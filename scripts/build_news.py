@@ -64,7 +64,7 @@ def render(entries):
     entries = validate(entries)
     if not entries:
         return ('<p class="news-empty">Updates will appear here.</p>',
-                '<a class="latest-news" href="#news" data-route="news"><span class="latest-news-label">News &amp; updates</span><span class="latest-news-title">Research and life along the way <span aria-hidden="true">↗</span></span></a>')
+                '<a class="destination destination-news latest-news" href="#news" data-route="news" draggable="false" aria-describedby="node-drag-help"><span class="news-object" aria-hidden="true">[+]</span><span class="destination-title">News <span aria-hidden="true">↗</span></span><span class="destination-note latest-news-title">Research &amp; life updates</span></a>')
     rows = []
     for index, item in enumerate(entries):
         kind = ' · ' + escape(item['kind']) if item.get('kind') else ''
@@ -73,7 +73,7 @@ def render(entries):
             link = f'<a class="plain-link news-link" href="{escape(item["url"], quote=True)}">{escape(item.get("linkLabel", "Read more"))} <span aria-hidden="true">↗</span></a>'
         rows.append(f'<li><article class="news-entry" aria-labelledby="news-title-{index}"><div class="news-date"><time datetime="{item["date"]}">{date_label(item["date"])}</time></div><div class="news-copy"><p class="news-meta">{escape(item["category"])}{kind}</p><h3 id="news-title-{index}">{escape(item["title"])}</h3><p class="news-summary">{escape(item["summary"])}</p>{link}</div></article></li>')
     title = escape(entries[0]['title'])
-    latest = f'<a class="latest-news" href="#news" data-route="news"><span class="latest-news-label">Latest update</span><span class="latest-news-title">{title}&nbsp;<span aria-hidden="true">↗</span></span></a>'
+    latest = f'<a class="destination destination-news latest-news" href="#news" data-route="news" draggable="false" aria-describedby="node-drag-help"><span class="news-object" aria-hidden="true">[+]</span><span class="destination-title">News <span aria-hidden="true">↗</span></span><span class="destination-note latest-news-title">{title}</span></a>'
     return '<ol class="news-list">\n' + '\n'.join(rows) + '\n</ol>', latest
 
 
