@@ -1,0 +1,11 @@
+[
+  {
+    "date": "2026",
+    "category": "Research",
+    "kind": "Acceptance",
+    "title": "Vis4GS accepted at IEEE VIS 2026",
+    "summary": "Our paper on visual analytics for 3D Gaussian Splatting reconstruction was accepted as a short paper at IEEE VIS 2026.",
+    "url": "https://arxiv.org/abs/2606.26985",
+    "linkLabel": "Read the paper"
+  }
+]

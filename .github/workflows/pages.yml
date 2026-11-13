@@ -23,6 +23,10 @@ jobs:
           node-version: '22'
       - run: npm install --ignore-scripts --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
+      - name: Generate news HTML
+        run: |
+          python3 -m unittest discover -s tests -p 'test_news.py'
+          python3 scripts/build_news.py
       - run: npm test
       - uses: actions/upload-artifact@v4
         if: always()
@@ -40,6 +44,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      - name: Generate news HTML
+        run: python3 scripts/build_news.py
       - name: Stage public site files
         run: |
           mkdir -p _site

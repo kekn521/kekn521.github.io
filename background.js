@@ -111,6 +111,12 @@
     const x = width < 768 ? 20 : width*.41;
     const y = header + (width < 768 ? 12 : 32);
     ctx.font = `${width < 768 ? 10 : 11}px ui-monospace, SFMono-Regular, Consolas, monospace`;
+    // Do not paint the decorative readout over the identity in short windows or after panning.
+    if (isHome()) {
+      const identity = document.querySelector('.map-identity').getBoundingClientRect();
+      const readoutRight = x + ctx.measureText('ken@atlas ~ / '+command).width + 10;
+      if (x < identity.right && readoutRight > identity.left && y - 6 < identity.bottom && y + 6 > identity.top) return;
+    }
     ctx.fillStyle=rgba(ink,dark?.64:.59);
     const shown = reduce.matches || paused ? command : command.slice(0,Math.floor(commandAge*28));
     ctx.fillText('ken@atlas ~ / '+shown, x, y);

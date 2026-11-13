@@ -61,12 +61,31 @@ const http = require('node:http');
     await page.getByRole('button',{name:'Switch to dark theme'}).click();await screenshot('atlas-dark');
     await page.getByRole('button',{name:'Switch to light theme'}).click();
 
+    const newsData=JSON.parse(await fs.readFile('news.json','utf8'));
+    await page.locator('.latest-news').click();await settle();
+    assert.equal(await page.locator('#news').isVisible(),true);
+    assert.equal(await page.locator('#news-heading').evaluate(el=>el===document.activeElement),true);
+    assert.equal(await page.locator('#news article').count(),newsData.length);
+    await screenshot('news-desktop');
+    await page.goBack();await settle();
+    assert.equal(await page.locator('#home').getAttribute('aria-hidden'),'false');
+    assert.equal(await page.locator('.latest-news').evaluate(el=>el===document.activeElement),true);
+    await page.getByRole('button',{name:'Directory',exact:false}).click();
+    await page.locator('#directory-dialog a[data-route="news"]').click();await settle();
+    assert.equal(await page.locator('#news').isVisible(),true);
+    await page.keyboard.press('Escape');await settle();
+    assert.equal(await page.locator('#home').getAttribute('aria-hidden'),'false');
+
     for (const size of [{width:390,height:844},{width:320,height:640},{width:844,height:390}]) {
       await page.setViewportSize(size);await page.goto(base);await settle();await screenshot(`atlas-${size.width}x${size.height}`);
       const geometry=await page.locator('.destination').evaluateAll(nodes=>nodes.map(el=>{const r=el.getBoundingClientRect();return {name:el.dataset.route,left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};}));
       for(let i=0;i<geometry.length;i++)for(let j=i+1;j<geometry.length;j++){const a=geometry[i],b=geometry[j];assert(a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top,`${size.width}: overlapping ${a.name} and ${b.name}`);}
       for(const node of geometry){assert(node.left>=-2 && node.right<=size.width+2,`${size.width}: ${node.name} outside horizontal viewport: ${JSON.stringify(node)}`);assert(node.top>=60 && node.bottom<=size.height-45,`${size.width}: ${node.name} outside vertical viewport: ${JSON.stringify(node)}`);assert(node.width>=44 && node.height>=44,`Small target: ${node.name}`);}
-      for(const route of ['projects','research','about','questions','off-duty','contact']) {
+      const latestBox=await page.locator('.latest-news').evaluate(el=>{const r=el.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};});
+      assert(latestBox.height>=44,`${size.width}: latest news link too small: ${JSON.stringify(latestBox)}`);
+      assert(latestBox.left>=-2 && latestBox.right<=size.width+2 && latestBox.top>=0 && latestBox.bottom<=size.height,`${size.width}: latest news link outside viewport: ${JSON.stringify(latestBox)}`);
+      for(const node of geometry){assert(latestBox.right<=node.left||node.right<=latestBox.left||latestBox.bottom<=node.top||node.bottom<=latestBox.top,`${size.width}: latest news link overlaps ${node.name}: ${JSON.stringify(latestBox)} vs ${JSON.stringify(node)}`);}
+      for(const route of ['news','projects','research','about','questions','off-duty','contact']) {
         await page.goto(base+'#'+route);await settle();
         assert.equal(await page.locator('#'+route).isVisible(),true);
         if(size.width===390){
@@ -77,7 +96,7 @@ const http = require('node:http');
         const headingTop=await page.locator('#'+route+' h2').evaluate(el=>el.getBoundingClientRect().top);
         assert(headingTop>=60,`${size.width}: clipped heading in ${route}: ${headingTop}`);
         assert.equal(await page.locator('#'+route).evaluate(el=>el.scrollWidth<=el.clientWidth+1),true,`${size.width}: overflow in ${route}`);
-        if(size.width===390 && ['projects','research','off-duty'].includes(route)) await screenshot(`${route}-mobile`);
+        if(size.width===390 && ['news','projects','research','off-duty'].includes(route)) await screenshot(`${route}-mobile`);
         if(size.width===390 && route==='off-duty'){await page.locator('.coffee-notes').scrollIntoViewIfNeeded();await screenshot('coffee-method-mobile');}
       }
     }
@@ -112,10 +131,12 @@ const http = require('node:http');
     assert.deepEqual(errors,[]);
     const noJS = await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}});
     const plain = await noJS.newPage();await plain.goto(base);
-    assert.equal(await plain.locator('[data-page]:visible').count(),6);
+    assert.equal(await plain.locator('[data-page]:visible').count(),7);
+    assert.equal(await plain.locator('#news').isVisible(),true);
+    assert.equal(await plain.locator('#news article').count(),newsData.length);
     assert.equal(await plain.locator('#directory').isVisible(),true);
     await noJS.close();
-    console.log('PASS: atlas navigation, direct routes, back/forward, Escape, directory focus, camera controls, theme, 3 viewport sizes, reduced motion, assets, CV PDF download, and no-JS content.');
+    console.log('PASS: atlas navigation, News via Latest link and Directory, direct routes, back/forward, Escape, directory focus, camera controls, theme, 3 viewport sizes, reduced motion, assets, CV PDF download, and no-JS content.');
   } catch(error) {
     await screenshot('failure');throw error;
   } finally {await browser.close();await new Promise(resolve=>server.close(resolve));}
