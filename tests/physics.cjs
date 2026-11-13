@@ -28,6 +28,13 @@ module.exports = async function verifyPhysics(page, base) {
   await page.waitForTimeout(120);
   assert(Math.hypot(...await offset('.destination-questions'))>10,'a dragged node pushes its neighbor');
   await page.mouse.up();
+  // Returning focus resumes a collision that was paused mid-animation.
+  await page.evaluate(()=>window.dispatchEvent(new Event('blur')));
+  const suspended=await page.locator('.destination').evaluateAll(els=>els.map(el=>el.style.translate));
+  await page.waitForTimeout(150);
+  assert.deepEqual(await page.locator('.destination').evaluateAll(els=>els.map(el=>el.style.translate)),suspended,'window blur pauses collision movement');
+  await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+  await page.waitForFunction(previous=>JSON.stringify([...document.querySelectorAll('.destination')].map(el=>el.style.translate))!==JSON.stringify(previous),suspended);
   // Nodes stay exactly where dropped; physics only resolves collisions.
   await reset();await move('.destination-news',40,10);await page.mouse.up();
   const dropped=await offset('.destination-news');

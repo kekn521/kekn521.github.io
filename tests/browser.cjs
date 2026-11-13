@@ -138,6 +138,7 @@ const http = require('node:http');
     await noJS.close();
     await page.emulateMedia({reducedMotion:'no-preference'});
     await require('./physics.cjs')(page,base);
+    await require('./swaps.cjs')(page,base);
     console.log('PASS: atlas navigation, News via News branch and Directory, direct routes, back/forward, Escape, directory focus, camera controls, theme, 3 viewport sizes, reduced motion, assets, CV PDF download, and no-JS content.');
   } catch(error) {
     await screenshot('failure');throw error;

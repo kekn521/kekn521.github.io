@@ -212,11 +212,10 @@
 
   // A sleeping contact simulation. Positions change only through dragging or collisions.
   function createNodePhysics() {
-    const nodes = [...scene.querySelectorAll('.destination')].map(el => ({el,x:0,y:0,vx:0,vy:0,box:null}));
-    let frame = 0, lastTime = 0, quietFrames = 0, held = null, blockedClick = null;
+    const nodes = [...scene.querySelectorAll('.destination')].map(el => ({el,x:0,y:0,tx:0,ty:0,vx:0,vy:0,box:null}));
+    let frame = 0, lastTime = 0, quietFrames = 0, held = null, blockedClick = null, placedNode = null, lastLayout = null;
     let width = 0, height = 0, identity = null;
     const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
-    const center = node => ({x:node.box.x+node.x,y:node.box.y+node.y,w:node.box.w,h:node.box.h});
     const live = () => currentRoute === 'home' && !document.hidden && !dialog.open;
 
     function measure() {
@@ -234,60 +233,91 @@
       nodes.forEach(node => {node.el.style.translate=`${node.x.toFixed(3)}px ${node.y.toFixed(3)}px`;});
       drawConnections();
     }
-    function bound(node) {
-      const b = node.box;
-      const x = clamp(node.x,Math.min(0,8+b.w/2-b.x),Math.max(0,width-8-b.w/2-b.x));
-      const y = clamp(node.y,Math.min(0,8+b.h/2-b.y),Math.max(0,height-8-b.h/2-b.y));
-      if (x !== node.x) node.vx *= -.25;
-      if (y !== node.y) node.vy *= -.25;
-      node.x=x;node.y=y;
+    // Solve against reserved destinations, not intermediate animation positions.
+    // This prevents a wall or another node from repeatedly undoing a separation.
+    const targetBox = node => ({x:node.box.x+node.tx,y:node.box.y+node.ty,w:node.box.w,h:node.box.h});
+    const intersects = (a,b,gap=8) => Math.abs(a.x-b.x)<(a.w+b.w)/2+gap-.01 && Math.abs(a.y-b.y)<(a.h+b.h)/2+gap-.01;
+    function limits(node) {
+      const b=node.box;
+      return {left:Math.min(b.x,8+b.w/2),right:Math.max(b.x,width-8-b.w/2),top:Math.min(b.y,8+b.h/2),bottom:Math.max(b.y,height-8-b.h/2)};
     }
-    // Rectangle contact resolves along the shallowest axis, then exchanges normal velocity.
-    function separate(a,b,fixedBox=null) {
-      const p=center(a), q=fixedBox || center(b);
-      const overlapX=(p.w+q.w)/2+8-Math.abs(p.x-q.x);
-      const overlapY=(p.h+q.h)/2+8-Math.abs(p.y-q.y);
-      if (overlapX<=0 || overlapY<=0) return;
-      const axis=overlapX<overlapY?'x':'y', speed=axis==='x'?'vx':'vy';
-      const sign=p[axis]>=q[axis]?1:-1, overlap=Math.min(overlapX,overlapY);
-      const ma=held?.node===a?0:1, mb=!b || held?.node===b?0:1, mass=ma+mb;
-      if (!mass) return;
-      a[axis]+=sign*overlap*ma/mass;
-      if (b) b[axis]-=sign*overlap*mb/mass;
-      const relative=(a[speed]-(b?.[speed] || 0))*sign;
-      if (relative<0) {
-        const impulse=-1.2*relative/mass;
-        a[speed]+=sign*impulse*ma;
-        if (b) b[speed]-=sign*impulse*mb;
+    function bound(node) {
+      const r=limits(node);
+      node.tx=clamp(node.tx+node.box.x,r.left,r.right)-node.box.x;
+      node.ty=clamp(node.ty+node.box.y,r.top,r.bottom)-node.box.y;
+      if (held?.node===node) {node.x=node.tx;node.y=node.ty;}
+    }
+    function freeSpot(node,preferred=null) {
+      const current=targetBox(node), r=limits(node);
+      const obstacles=[identity,...nodes.filter(other=>other!==node).map(targetBox)].filter(Boolean);
+      const anchor=preferred?{x:clamp(preferred.x,r.left,r.right),y:clamp(preferred.y,r.top,r.bottom)}:current;
+      const xs=[anchor.x,current.x,r.left,r.right],ys=[anchor.y,current.y,r.top,r.bottom];
+      // The space vacated by the dragged node is a useful escape route when swapping.
+      if (held) {xs.push(held.node.box.x+held.x);ys.push(held.node.box.y+held.y);}
+      for (const other of obstacles) {
+        xs.push(other.x-(other.w+current.w)/2-8,other.x+(other.w+current.w)/2+8);
+        ys.push(other.y-(other.h+current.h)/2-8,other.y+(other.h+current.h)/2+8);
       }
+      let best=null;
+      for (const x of xs) for (const y of ys) {
+        if (x<r.left-.01 || x>r.right+.01 || y<r.top-.01 || y>r.bottom+.01) continue;
+        const candidate={...current,x,y};
+        if (obstacles.some(other=>intersects(candidate,other))) continue;
+        const cost=(x-anchor.x)**2+(y-anchor.y)**2;
+        if (!best || cost<best.cost) best={x:x-node.box.x,y:y-node.box.y,cost};
+      }
+      return best;
+    }
+    function place(node,spot) {
+      node.tx=spot.x;node.ty=spot.y;
+      // A new collision destination replaces momentum; nothing pushes back to home.
+      node.vx=node.vy=0;
     }
     function contacts() {
-      for (let pass=0;pass<3;pass++) {
-        nodes.forEach(node => {if (identity) separate(node,null,identity);});
-        for (let i=0;i<nodes.length;i++) for (let j=i+1;j<nodes.length;j++) separate(nodes[i],nodes[j]);
-        nodes.forEach(bound);
+      nodes.forEach(bound);
+      // Keep the dragged object under the pointer, and let its neighbors yield first.
+      const pinned=held?.node || placedNode;
+      for (const node of nodes) {
+        if (node===held?.node || !identity || !intersects(targetBox(node),identity)) continue;
+        const spot=freeSpot(node);if (spot) place(node,spot);
       }
+      for (let i=0;i<nodes.length;i++) for (let j=i+1;j<nodes.length;j++) {
+        const a=nodes[i],b=nodes[j];
+        if (!intersects(targetBox(a),targetBox(b))) continue;
+        const first=a===pinned?b:a,second=first===a?b:a;
+        const spot=freeSpot(first);
+        if (spot) place(first,spot);
+        else if (second!==held?.node) {const alternative=freeSpot(second);if(alternative)place(second,alternative);}
+      }
+      const clear=nodes.every((node,i)=>!intersects(targetBox(node),identity) && nodes.slice(i+1).every(other=>!intersects(targetBox(node),targetBox(other))));
+      if (clear) lastLayout=nodes.map(node=>({x:node.tx,y:node.ty}));
+      else if (!held && placedNode && lastLayout) {
+        // An oversized object cannot fit every narrow slot. Return to the last clear
+        // arrangement instead of leaving it wedged under the name or another node.
+        nodes.forEach((node,i)=>place(node,lastLayout[i]));
+      }
+      if (reducedMotion.matches) nodes.forEach(node=>{if(node!==held?.node){node.x=node.tx;node.y=node.ty;node.vx=node.vy=0;}});
     }
     function tick(now) {
       frame=0;
       if (!live() || reducedMotion.matches) return;
       const elapsed=lastTime?Math.min((now-lastTime)/1000,1/30):1/60;
       lastTime=now;
-      const before=nodes.map(node=>({x:node.x,y:node.y}));
+      contacts();
       const steps=Math.ceil(elapsed/(1/120)), dt=elapsed/steps;
       for (let step=0;step<steps;step++) {
         nodes.forEach(node => {
           if (held?.node===node) return;
-          node.vx*=Math.exp(-7.5*dt);
-          node.vy*=Math.exp(-7.5*dt);
+          node.vx=(node.vx+(node.tx-node.x)*240*dt)*Math.exp(-25*dt);
+          node.vy=(node.vy+(node.ty-node.y)*240*dt)*Math.exp(-25*dt);
           node.x+=node.vx*dt;node.y+=node.vy*dt;
         });
-        contacts();
       }
-      const quiet=nodes.every((node,i)=>Math.hypot(node.x-before[i].x,node.y-before[i].y)<.025 && Math.hypot(node.vx,node.vy)<1.5);
+      const quiet=nodes.every(node=>Math.hypot(node.x-node.tx,node.y-node.ty)<.02 && Math.hypot(node.vx,node.vy)<.3);
       quietFrames=quiet?quietFrames+1:0;
       if (!held && quietFrames>12) {
-        nodes.forEach(node=>{node.vx=node.vy=0;});
+        nodes.forEach(node=>{node.x=node.tx;node.y=node.ty;node.vx=node.vy=0;});
+        placedNode=null;
       } else frame=requestAnimationFrame(tick);
       paint();
     }
@@ -298,6 +328,18 @@
     function finish(event,cancelled=false) {
       if (!held || (event && event.pointerId!==held.id)) return;
       const active=held;held=null;
+      placedNode=active.node;
+      if (active.moved && !cancelled) {
+        const dropped=targetBox(active.node);
+        const occupied=active.startLayout.filter(item=>item.node!==active.node && Math.abs(dropped.x-item.box.x)<item.box.w/2 && Math.abs(dropped.y-item.box.y)<item.box.h/2)
+          .sort((a,b)=>Math.hypot(a.box.x-dropped.x,a.box.y-dropped.y)-Math.hypot(b.box.x-dropped.x,b.box.y-dropped.y))[0];
+        if (occupied) {
+          // Dropping into an occupied spot is a swap: use the space just vacated,
+          // even if that neighbor yielded temporarily while the pointer approached.
+          const spot=freeSpot(occupied.node,{x:active.node.box.x+active.x,y:active.node.box.y+active.y});
+          if (spot) place(occupied.node,spot);
+        }
+      }
       active.node.el.classList.remove('is-node-held');
       viewport.classList.remove('is-node-dragging');
       if (active.moved) blockedClick=active.node.el;
@@ -317,7 +359,8 @@
     }
     function reset() {
       stop();
-      nodes.forEach(node=>{node.x=node.y=0;node.el.style.translate='0px 0px';});
+      placedNode=null;lastLayout=null;
+      nodes.forEach(node=>{node.x=node.y=node.tx=node.ty=0;node.el.style.translate='0px 0px';});
       measure();drawConnections();
     }
     nodes.forEach(node => {
@@ -328,9 +371,9 @@
         blockedClick=null;
         viewport.classList.add('is-node-dragging');
         measure();
-        node.vx=node.vy=0;
+        node.vx=node.vy=0;node.tx=node.x;node.ty=node.y;placedNode=null;
         const bounds=scene.getBoundingClientRect();
-        held={node,id:event.pointerId,startX:event.clientX,startY:event.clientY,x:node.x,y:node.y,scaleX:width/bounds.width,scaleY:height/bounds.height,lastMove:performance.now(),moved:false};
+        held={node,id:event.pointerId,startX:event.clientX,startY:event.clientY,x:node.x,y:node.y,scaleX:width/bounds.width,scaleY:height/bounds.height,moved:false,startLayout:nodes.map(other=>({node:other,box:{...other.box,x:other.box.x+other.x,y:other.box.y+other.y}}))};
         // Capture immediately so a fast flick cannot outrun a small node.
         el.setPointerCapture(event.pointerId);
         event.stopPropagation();
@@ -344,12 +387,10 @@
           held.moved=true;el.setPointerCapture(event.pointerId);
           el.classList.add('is-node-held');viewport.classList.add('is-node-dragging');
         }
-        const now=performance.now(),dt=Math.max((now-held.lastMove)/1000,1/120);
         const x=held.x+dx*held.scaleX,y=held.y+dy*held.scaleY;
-        node.vx=clamp((x-node.x)/dt,-900,900);node.vy=clamp((y-node.y)/dt,-900,900);
-        node.x=x;node.y=y;held.lastMove=now;
+        node.x=node.tx=x;node.y=node.ty=y;node.vx=node.vy=0;
         bound(node);
-        if (reducedMotion.matches) contacts();
+        contacts();
         paint();wake();
       });
       el.addEventListener('pointerup',event=>finish(event));
@@ -361,7 +402,8 @@
         const moves={ArrowLeft:[-32,0],ArrowRight:[32,0],ArrowUp:[0,-32],ArrowDown:[0,32]};
         if (!moves[event.key]) return;
         event.preventDefault();measure();node.x+=moves[event.key][0];node.y+=moves[event.key][1];
-        node.vx=node.vy=0;bound(node);contacts();paint();wake();
+        node.tx=node.x;node.ty=node.y;placedNode=node;
+        node.vx=node.vy=0;bound(node);node.x=node.tx;node.y=node.ty;contacts();paint();wake();
       });
     });
     // Block only the synthetic click from a completed drag, never keyboard activation.
@@ -372,6 +414,7 @@
     },true);
     window.addEventListener('pointerup',event=>finish(event));
     window.addEventListener('blur',stop);
+    window.addEventListener('focus',wake);
     document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();else wake();});
     reducedMotion.addEventListener('change',()=>{stop();if(!reducedMotion.matches)wake();});
     return {measure,wake,stop,reset};

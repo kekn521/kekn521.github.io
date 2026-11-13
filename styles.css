@@ -113,14 +113,14 @@ dialog nav a:hover,dialog nav a:focus-visible{translate:5px 0}
 
 /* Six branches; independent translation lets the simulation preserve each object's tilt. */
 .destination-news.latest-news{left:6%;top:44%;bottom:auto;right:auto;width:23%;max-width:25%;margin:0;padding:0;border:0;transform:rotate(-3deg);line-height:1.45}
-.news-object{display:block;font-family:Atlas Text,monospace;font-size:clamp(30px,3.7vw,52px);letter-spacing:-.08em;line-height:1.1;margin-bottom:12px;color:var(--accent)}
+.news-object{display:block;width:auto;height:clamp(33px,4.07vw,57.2px);margin-bottom:12px;color:var(--accent);overflow:visible}
 .destination-news .latest-news-title{font-size:10px;line-height:1.5;margin-top:6px;max-width:28ch}
 .js .destination{touch-action:none;cursor:grab;translate:0 0}
 .js .destination:active,.js .destination.is-node-held{cursor:grabbing}
 .js .destination.is-node-held{z-index:2}
 .js .is-node-dragging .map-scene{transition:none}
 .js .is-node-dragging .destination-title{text-decoration:none}
-@media(max-width:1024px){.destination-news.latest-news{left:5%;width:23%;max-width:25%;top:44%}.news-object{font-size:35px}}
+@media(max-width:1024px){.destination-news.latest-news{left:5%;width:23%;max-width:25%;top:44%}.news-object{height:38.5px}}
 @media(max-width:767px){
  .destination-news.latest-news{left:8%;top:auto;bottom:2%;width:43%;max-width:43%;min-height:55px}
  .destination-news .news-object{display:none}
