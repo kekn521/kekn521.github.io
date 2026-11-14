@@ -5,24 +5,13 @@ module.exports = async (page, base) => {
   const news = JSON.parse(await fs.readFile('news.json','utf8'));
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.goto(base+'#news');
-  const visible = () => page.locator('#news [data-news-category]:visible').count();
-  assert.equal(await visible(),news.length);
-  for (const category of ['Research','Life']) {
-    await page.locator(`[data-timeline-filter="${category}"]`).click();
-    assert.equal(await visible(),news.filter(item=>item.category===category).length);
-    assert(await page.locator('#news [data-news-category]:visible').evaluateAll((nodes,category)=>nodes.every(node=>node.dataset.newsCategory===category),category));
-    for (const year of [...new Set(news.map(item=>item.date.slice(0,4)))]) {
-      await page.selectOption('#timeline-year',year);
-      const expected=news.filter(item=>item.category===category && item.date.startsWith(year)).length;
-      assert.equal(await visible(),expected);
-      assert.equal(await page.locator('#timeline-empty').isVisible(),expected===0);
-      assert.equal(await page.locator('#timeline-status').textContent(),`${expected} ${expected===1?'update':'updates'} shown`);
-      assert(await page.locator('[data-timeline-year]').evaluateAll(groups=>groups.every(group=>group.hidden===[...group.querySelectorAll('[data-news-category]')].every(row=>row.hidden))));
-    }
-    await page.selectOption('#timeline-year','all');
-  }
-  await page.locator('[data-timeline-filter="all"]').click();
-  assert.equal(await visible(),news.length);
+  assert.equal(await page.locator('#news article:visible').count(),news.length);
+  assert.equal(await page.locator('[data-timeline-filter]').count(),0);
+  await page.goto(base+'#about');
+  assert(await page.locator('#about .personal-timeline').isVisible());
+  assert.deepEqual(await page.locator('.personal-timeline time').allTextContents(),['2022','2023','2026','2026','2026','2026']);
+  assert.equal(await page.locator('.about-timeline-link').count(),0);
+  assert.deepEqual(await page.locator('.personal-timeline h4').allTextContents(),['Started at NTHU','Transferred to Computer Science','Vis4GS accepted at IEEE VIS','Released the Vis4GS preprint','Started M.S. studies in ISA','Presented at IEEE VIS 2026']);
   await page.goto(base+'#questions');
   await page.locator('[data-playground-link]').click();
   await page.waitForFunction(()=>location.hash==='#research' && document.activeElement.id==='playground-heading');
@@ -54,8 +43,31 @@ module.exports = async (page, base) => {
   assert(await scene.evaluate(el=>el.classList.contains('is-zoomed')));
   await page.locator('#comparison-zoom').click();
   assert.equal(await page.locator('#comparison-zoom').getAttribute('aria-pressed'),'false');
+  const family = JSON.parse(await fs.readFile('assets/vis4gs-genealogy.json','utf8'));
+  assert.equal(await page.locator('[data-genealogy-id]').count(),family.nodes.length);
+  for (const node of family.nodes) {
+    const button=page.locator(`[data-genealogy-id="${node.id}"]`);
+    assert.equal(await button.getAttribute('data-birth'),String(node.birth));
+    assert.equal(await button.getAttribute('data-parent'),node.parentIds.length?String(node.parentIds[0]):'');
+    assert.equal(await button.getAttribute('data-pruned'),node.prunedAt===null?'':String(node.prunedAt));
+  }
+  assert.equal(await page.locator('#genealogy-path').textContent(),'#3125 → #903358 → #1279124');
+  await page.locator('#genealogy-parent-button').click();
+  assert.equal(await page.locator('#genealogy-select').inputValue(),'903358');
+  assert.equal(await page.locator('#genealogy-children').textContent(),'2');
+  await page.locator('#genealogy-parent-button').click();
+  assert(await page.locator('#genealogy-parent-button').isDisabled());
+  assert.equal(await page.locator('#genealogy-pruned').textContent(),'3,100');
+  await page.locator('[data-genealogy-id="1171301"]').press('Enter');
+  assert.equal(await page.locator('#genealogy-birth').textContent(),'3,300');
+  assert.equal(await page.locator('.genealogy-node.is-lineage').count(),3);
+  assert.equal(await page.locator('.genealogy-edges path.is-lineage').count(),2);
   for (const size of [{width:320,height:640},{width:390,height:844}]) {
-    await page.setViewportSize(size);await scene.scrollIntoViewIfNeeded();
+    await page.setViewportSize(size);
+    await page.selectOption('#genealogy-select','475872');
+    assert.equal(await page.locator('#genealogy-path').textContent(),'#3125 → #475872');
+    assert(await page.locator('.genealogy-scroll').evaluate(el=>el.scrollWidth>el.clientWidth));
+    await scene.scrollIntoViewIfNeeded();
     box=await scene.boundingBox();
     assert(box.x>=-1 && box.x+box.width<=size.width+1,'mobile comparison fits');
     assert(await page.locator('#research').evaluate(el=>el.scrollWidth<=el.clientWidth+1));
@@ -70,5 +82,5 @@ module.exports = async (page, base) => {
   await page.getByRole('button',{name:'Switch to light theme'}).click();
   const value=await range.inputValue();await page.waitForTimeout(150);assert.equal(await range.inputValue(),value,'no autoplay');
   await page.emulateMedia({reducedMotion:'no-preference'});
-  console.log('PASS: research/life/year timeline intersections and empty states; real reconstruction reveal, image assets, presets, keyboard, pointer drag, zoom, phone layout, themes and playground entry focus.');
+  console.log('PASS: inline personal timeline below the About bio and separate News feed; real reconstruction reveal, image assets, presets, keyboard, pointer drag, zoom, phone layout, themes playground entry focus, recorded genealogy integrity, ancestor selection and mobile tree controls.');
 };

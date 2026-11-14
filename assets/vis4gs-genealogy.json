@@ -1,0 +1,86 @@
+{
+  "scene": "Bonsai",
+  "snapshotIteration": 30000,
+  "rootId": 3125,
+  "nodes": [
+    {
+      "id": 3125,
+      "birth": 0,
+      "operation": "create",
+      "parentIds": [],
+      "prunedAt": 3100
+    },
+    {
+      "id": 475872,
+      "birth": 1200,
+      "operation": "clone",
+      "parentIds": [
+        3125
+      ],
+      "prunedAt": 3100
+    },
+    {
+      "id": 583363,
+      "birth": 1400,
+      "operation": "clone",
+      "parentIds": [
+        3125
+      ],
+      "prunedAt": 3100
+    },
+    {
+      "id": 761341,
+      "birth": 1800,
+      "operation": "clone",
+      "parentIds": [
+        3125
+      ],
+      "prunedAt": 3100
+    },
+    {
+      "id": 871549,
+      "birth": 2100,
+      "operation": "clone",
+      "parentIds": [
+        3125
+      ],
+      "prunedAt": 3100
+    },
+    {
+      "id": 903358,
+      "birth": 2200,
+      "operation": "clone",
+      "parentIds": [
+        3125
+      ],
+      "prunedAt": null
+    },
+    {
+      "id": 993776,
+      "birth": 2500,
+      "operation": "clone",
+      "parentIds": [
+        3125
+      ],
+      "prunedAt": 3100
+    },
+    {
+      "id": 1171301,
+      "birth": 3300,
+      "operation": "clone",
+      "parentIds": [
+        903358
+      ],
+      "prunedAt": null
+    },
+    {
+      "id": 1279124,
+      "birth": 3800,
+      "operation": "clone",
+      "parentIds": [
+        903358
+      ],
+      "prunedAt": null
+    }
+  ]
+}

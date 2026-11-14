@@ -201,23 +201,15 @@ dialog nav a:hover,dialog nav a:focus-visible{translate:5px 0}
 #comparison-zoom span{margin-left:16px}
 .comparison-presets{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap}
 .comparison-presets button{min-height:44px;border:1px solid var(--line);padding:10px 18px;font-size:12px}
-.comparison-presets button[aria-pressed=true],.timeline-topic-filters button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.comparison-presets button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .research-playground .playground-help{font-size:11px;color:var(--muted);margin-top:18px;max-width:80ch}
 .research-playground .playground-disclosure{font-size:11px;color:var(--muted);margin-top:8px;max-width:85ch}
 .research-playground .playground-connection{font-size:14px;max-width:80ch;margin-top:28px}
 .playground-connection a{font-size:12px;margin-top:8px}
 .playground-fallback img{width:100%;height:auto}
-.playground-entry,.about-timeline-link{margin-top:28px}
+.playground-entry{margin-top:28px}
 
-/* The news feed becomes a continuous, filterable personal timeline. */
-.timeline-controls{justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;margin:0 0 20px}
-.timeline-topic-filters{display:flex;gap:8px}
-.timeline-topic-filters button{border:1px solid var(--line);padding:10px 18px;font-size:12px;min-height:44px}
-.timeline-year-select{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted)}
-.timeline-year-select select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:0;padding:10px;min-height:44px;min-width:110px}
-select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
-.news-view .timeline-status{font-size:11px;color:var(--muted);margin-bottom:32px}
-.news-view .timeline-empty{padding:28px 0;border-top:1px solid var(--line);font-size:15px}
+/* Year groups in the news feed. */
 .timeline-year{display:grid;grid-template-columns:110px minmax(0,1fr);gap:30px;margin-bottom:38px}
 .timeline-year .timeline-year-label{font-size:42px;letter-spacing:-.05em;margin:20px 0 0}
 .timeline-year .news-list{border-left:1px solid var(--line);padding-left:28px;min-width:0}
@@ -239,11 +231,48 @@ select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline
  .comparison-range label{font-size:11px}.comparison-presets{gap:6px;margin-top:20px}
  .comparison-presets button{padding:10px 12px;font-size:11px}
  #comparison-zoom{align-self:flex-start}
- .timeline-controls{gap:14px;align-items:flex-start}
- .timeline-topic-filters{gap:6px}.timeline-topic-filters button{padding:10px 14px}
  .timeline-year{grid-template-columns:1fr;gap:14px;margin-bottom:32px}
  .timeline-year .timeline-year-label{font-size:36px;margin:0}
  .timeline-year .news-list{margin-left:5px;padding-left:22px}
  .timeline-year .news-list>li:before{left:-27px}
  .news-copy h4{font-size:26px}
 }
+
+/* Personal milestones sit directly below the About introduction. */
+.personal-timeline{margin-top:36px;padding-top:28px;border-top:1px solid var(--line)}
+.personal-timeline h3{font-size:26px;margin-bottom:24px}
+.personal-timeline ol{list-style:none;padding:0;margin:0}
+.personal-timeline li{position:relative;display:grid;grid-template-columns:48px minmax(0,1fr);gap:22px;padding:0 0 26px 20px;border-left:1px solid var(--line)}
+.personal-timeline li:last-child{padding-bottom:0}
+.personal-timeline li::before{content:'';position:absolute;left:-4px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--bg)}
+.personal-timeline time{font-size:12px;color:var(--muted);line-height:24px}
+.personal-timeline h4{font-family:Atlas Display,Arial,sans-serif;font-size:18px;line-height:1.35;margin:0 0 6px}
+.personal-timeline p{font-size:12px;color:var(--muted);line-height:1.65}
+@media(max-width:767px){.personal-timeline li{gap:12px;padding-left:16px}.personal-timeline h4{font-size:17px}}
+
+/* A compact recorded Gaussian family; all nodes remain keyboard accessible. */
+.genealogy-playground{margin-top:48px;padding-top:34px;border-top:1px solid var(--line)}
+.genealogy-layout{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:28px;align-items:start}
+.genealogy-scroll{overflow:auto;border:1px solid var(--line);background:var(--surface);max-width:100%;overscroll-behavior-x:contain}
+.genealogy-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.genealogy-map{position:relative;min-width:740px}
+.genealogy-edges{position:absolute;inset:0;width:740px;height:100%;overflow:visible}
+.genealogy-edges path{fill:none;stroke:var(--line);stroke-width:1.5}
+.genealogy-edges path.is-lineage{stroke:var(--accent);stroke-width:3}
+.genealogy-node{position:absolute;width:158px;min-height:50px;padding:7px 10px;text-align:left;background:var(--bg);border:1px solid var(--line);font-size:11px}
+.genealogy-node strong{display:block;font-size:12px}.genealogy-node span{display:block;color:var(--muted);font-size:10px;margin-top:2px}
+.genealogy-node[data-pruned]:not([data-pruned=""]){border-style:dashed}
+.genealogy-node.is-lineage{border-color:var(--accent)}
+.genealogy-node[aria-pressed=true]{background:var(--ink);color:var(--bg);border-style:solid}
+.genealogy-node[aria-pressed=true] span{color:var(--bg)}
+.genealogy-node:focus-visible{outline-offset:3px}
+.genealogy-inspector label{font-size:12px;display:block;margin-bottom:10px}
+.genealogy-inspector select{width:100%;min-height:44px;padding:10px;font:inherit;font-size:12px;background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.genealogy-selection{font-family:Atlas Display,Arial,sans-serif;font-size:24px;margin:22px 0 16px}
+.genealogy-inspector dl{font-size:11px}.genealogy-inspector dl>div{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.genealogy-inspector dt{color:var(--muted)}.genealogy-inspector dd{margin:0;text-align:right}
+.genealogy-inspector .genealogy-path{font-size:11px;line-height:1.8;margin-top:20px;overflow-wrap:anywhere}
+#genealogy-parent-button{font-size:11px;min-height:44px;margin-top:12px}#genealogy-parent-button:disabled{opacity:.45;cursor:default}
+.genealogy-legend{display:flex;gap:22px;flex-wrap:wrap;margin-top:16px;font-size:10px;color:var(--muted)}
+@media(max-width:1100px){.genealogy-layout{grid-template-columns:1fr}.genealogy-inspector{max-width:440px}}
+@media(max-width:767px){.genealogy-playground{margin-top:35px;padding-top:28px}.genealogy-map{min-width:740px}.genealogy-layout{gap:24px}}

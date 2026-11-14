@@ -1,32 +1,6 @@
 'use strict';
 
 (() => {
-  // The generated HTML remains the complete timeline when JavaScript is unavailable.
-  const timeline = document.getElementById('news');
-  const yearSelect = document.getElementById('timeline-year');
-  const topicButtons = [...document.querySelectorAll('[data-timeline-filter]')];
-  if (timeline && yearSelect) {
-    const groups = [...timeline.querySelectorAll('[data-timeline-year]')];
-    const rows = [...timeline.querySelectorAll('[data-news-category]')];
-    let category = 'all';
-    for (const group of groups) yearSelect.add(new Option(group.dataset.timelineYear, group.dataset.timelineYear));
-    const filterTimeline = () => {
-      let count = 0;
-      for (const row of rows) {
-        const visible = (category === 'all' || row.dataset.newsCategory === category) && (yearSelect.value === 'all' || row.dataset.newsYear === yearSelect.value);
-        row.hidden = !visible;
-        if (visible) count++;
-      }
-      for (const group of groups) group.hidden = ![...group.querySelectorAll('[data-news-category]')].some(row => !row.hidden);
-      topicButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.timelineFilter === category)));
-      document.getElementById('timeline-status').textContent = `${count} ${count === 1 ? 'update' : 'updates'} shown`;
-      document.getElementById('timeline-empty').hidden = count !== 0;
-    };
-    topicButtons.forEach(button => button.addEventListener('click', () => {category = button.dataset.timelineFilter;filterTimeline();}));
-    yearSelect.addEventListener('change', filterTimeline);
-    filterTimeline();
-  }
-
   const playground = document.getElementById('research-playground');
   const comparison = document.getElementById('reconstruction-comparison');
   const reveal = document.getElementById('comparison-reveal');
@@ -73,6 +47,39 @@
     if (!event.target.closest('[data-playground-link]') || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
     requestAnimationFrame(() => {document.getElementById('playground-heading').focus({preventScroll:true});playground.scrollIntoView({block:'start',behavior:'instant'});});
   });
+  const tree = document.querySelector('.genealogy-playground');
+  if (tree) {
+    const buttons = [...tree.querySelectorAll('[data-genealogy-id]')];
+    const nodes = new Map(buttons.map(button => [button.dataset.genealogyId, button]));
+    const menu = document.getElementById('genealogy-select');
+    const parentButton = document.getElementById('genealogy-parent-button');
+    let selected = '';
+    const selectNode = id => {
+      const node = nodes.get(id);
+      if (!node) return;
+      selected = id;menu.value = id;
+      const ancestry = [], visited = new Set();
+      let current = id;
+      while (nodes.has(current) && !visited.has(current)) {visited.add(current);ancestry.push(current);current = nodes.get(current).dataset.parent;}
+      buttons.forEach(button => {button.setAttribute('aria-pressed', String(button === node));button.classList.toggle('is-lineage', visited.has(button.dataset.genealogyId));});
+      tree.querySelectorAll('[data-genealogy-edge]').forEach(edge => edge.classList.toggle('is-lineage', visited.has(edge.dataset.genealogyEdge)));
+      const number = value => Number(value).toLocaleString('en-US');
+      document.getElementById('genealogy-selection').textContent = `Gaussian #${id}`;
+      document.getElementById('genealogy-birth').textContent = number(node.dataset.birth);
+      document.getElementById('genealogy-operation').textContent = node.dataset.operation === 'create' ? 'Initial Gaussian' : 'Clone';
+      document.getElementById('genealogy-parent').textContent = node.dataset.parent ? `#${node.dataset.parent}` : 'None (root)';
+      document.getElementById('genealogy-children').textContent = String(buttons.filter(button => button.dataset.parent === id).length);
+      document.getElementById('genealogy-pruned').textContent = node.dataset.pruned ? number(node.dataset.pruned) : 'Not pruned by 30,000';
+      document.getElementById('genealogy-path').textContent = ancestry.reverse().map(value => `#${value}`).join(' → ');
+      parentButton.disabled = !node.dataset.parent;
+    };
+    buttons.forEach(button => button.addEventListener('click', () => selectNode(button.dataset.genealogyId)));
+    menu.addEventListener('change', () => selectNode(menu.value));
+    parentButton.addEventListener('click', () => selectNode(nodes.get(selected).dataset.parent));
+    tree.querySelector('.genealogy-interactive').hidden = false;
+    tree.querySelector('.genealogy-fallback').hidden = true;
+    selectNode('1279124');
+  }
   // Both views use the original presentation image, cropped by CSS without altering pixels.
   playground.querySelector('.playground-interactive').hidden = false;
   playground.querySelector('.playground-fallback').hidden = true;
