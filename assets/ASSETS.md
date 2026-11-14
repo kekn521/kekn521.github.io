@@ -12,3 +12,5 @@ Use case: photorealistic-natural. Asset type: editorial still-life for the Off d
 
 ## Waystation
 `waystation.webp`: optimized from the public `kekn521/Waystation` repository, `artifacts/waystation-overview-orbit.png` (Git blob `9e5971dd4bc0ac6ff30dd780c0d41afde6fde810`). The screenshot shows the actual interface with illustrative workspace and service data.
+
+- `vis4gs-training-comparison.png`: unchanged copy of the author’s local `Vis4GS/presentation_assets/evo2_clean.png`, showing real reconstruction views at iterations 500 and 30,000. The playground displays the corresponding image regions using CSS and adds a reveal divider; it does not synthesize frames or infer Gaussian ancestry.

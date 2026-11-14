@@ -4,6 +4,7 @@ import argparse
 from datetime import date
 from html import escape
 import json
+from itertools import groupby
 from pathlib import Path
 import re
 from urllib.parse import urlsplit
@@ -73,15 +74,21 @@ def render(entries):
         return ('<p class="news-empty">Updates will appear here.</p>',
                 f'<a class="destination destination-news latest-news" href="#news" data-route="news" draggable="false" aria-describedby="node-drag-help">{NEWS_SYMBOL}<span class="destination-title">News <span aria-hidden="true">↗</span></span><span class="destination-note latest-news-title">Research &amp; life updates</span></a>')
     rows = []
+    sections = []
     for index, item in enumerate(entries):
         kind = ' · ' + escape(item['kind']) if item.get('kind') else ''
         link = ''
         if item.get('url'):
             link = f'<a class="plain-link news-link" href="{escape(item["url"], quote=True)}">{escape(item.get("linkLabel", "Read more"))} <span aria-hidden="true">↗</span></a>'
-        rows.append(f'<li><article class="news-entry" aria-labelledby="news-title-{index}"><div class="news-date"><time datetime="{item["date"]}">{date_label(item["date"])}</time></div><div class="news-copy"><p class="news-meta">{escape(item["category"])}{kind}</p><h3 id="news-title-{index}">{escape(item["title"])}</h3><p class="news-summary">{escape(item["summary"])}</p>{link}</div></article></li>')
+        year = date_parts(item['date'])[0]
+        rows.append((year, f'<li data-news-category="{escape(item["category"])}" data-news-year="{year}"><article class="news-entry" aria-labelledby="news-title-{index}"><div class="news-date"><time datetime="{item["date"]}">{date_label(item["date"])}</time></div><div class="news-copy"><p class="news-meta">{escape(item["category"])}{kind}</p><h4 id="news-title-{index}">{escape(item["title"])}</h4><p class="news-summary">{escape(item["summary"])}</p>{link}</div></article></li>'))
+    for year, grouped in groupby(rows, key=lambda row: row[0]):
+        label = str(year)
+        items = '\n'.join(row for _, row in grouped)
+        sections.append(f'<section class="timeline-year" data-timeline-year="{label}" aria-labelledby="timeline-year-{label}"><h3 id="timeline-year-{label}" class="timeline-year-label">{label}</h3><ol class="news-list">\n{items}\n</ol></section>')
     title = escape(entries[0]['title'])
     latest = f'<a class="destination destination-news latest-news" href="#news" data-route="news" draggable="false" aria-describedby="node-drag-help">{NEWS_SYMBOL}<span class="destination-title">News <span aria-hidden="true">↗</span></span><span class="destination-note latest-news-title">{title}</span></a>'
-    return '<ol class="news-list">\n' + '\n'.join(rows) + '\n</ol>', latest
+    return '\n'.join(sections), latest
 
 
 def build_html(template, entries):

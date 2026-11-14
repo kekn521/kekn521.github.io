@@ -135,10 +135,16 @@ const http = require('node:http');
     assert.equal(await plain.locator('#news').isVisible(),true);
     assert.equal(await plain.locator('#news article').count(),newsData.length);
     assert.equal(await plain.locator('#directory').isVisible(),true);
+    assert.equal(await plain.locator('#research-playground .playground-fallback').isVisible(),true);
+    assert.equal(await plain.locator('#research-playground .playground-interactive').isVisible(),false);
+    assert.equal(await plain.locator('#timeline-year').isVisible(),false);
+    assert.equal(await plain.locator('#news [data-timeline-filter="Research"]').isVisible(),false);
     await noJS.close();
     await page.emulateMedia({reducedMotion:'no-preference'});
+    await require('./explore.cjs')(page,base);
     await require('./physics.cjs')(page,base);
     await require('./swaps.cjs')(page,base);
+    assert.deepEqual(errors,[]);
     console.log('PASS: atlas navigation, News via News branch and Directory, direct routes, back/forward, Escape, directory focus, camera controls, theme, 3 viewport sizes, reduced motion, assets, CV PDF download, and no-JS content.');
   } catch(error) {
     await screenshot('failure');throw error;

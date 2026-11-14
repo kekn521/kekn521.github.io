@@ -175,3 +175,75 @@ dialog nav a:hover,dialog nav a:focus-visible{translate:5px 0}
  .map-scene .destination-contact .node-symbol{width:36px;height:30px}
 }
 @media(prefers-reduced-motion:reduce){.map-scene .destination:hover .node-symbol,.map-scene .destination:focus-visible .node-symbol{transform:none}}
+
+/* Research playground: direct manipulation, with the real paper kept alongside. */
+.research-playground{margin:30px 0 70px;padding-top:34px;border-top:1px solid var(--line);scroll-margin-top:25px}
+.playground-intro{max-width:760px;margin-bottom:28px}
+.playground-intro .playground-kicker{font-size:11px;color:var(--muted);margin-bottom:15px}
+.playground-intro h3{font-size:clamp(28px,3.5vw,44px);margin-bottom:16px}
+.playground-intro>p:last-child{font-size:15px;max-width:60ch}
+/* Original 1704x600 presentation image: two 758x370 viewports at (3,133) and (943,133). */
+.reconstruction-comparison{position:relative;aspect-ratio:758/370;overflow:hidden;cursor:ew-resize;touch-action:pan-y;border:1px solid var(--line);background:var(--surface);user-select:none}
+.reconstruction-frame,.reconstruction-crop{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.reconstruction-crop img{position:absolute;max-width:none;width:224.802111%;height:auto;top:-35.945946%;left:-.395778%}
+.reconstruction-late .reconstruction-crop img{left:-124.406332%}
+.reconstruction-late{clip-path:inset(0 calc(100% - var(--reveal)) 0 0)}
+.is-zoomed .reconstruction-crop{transform:scale(2);transform-origin:50% 78%}
+.comparison-divider{position:absolute;top:0;bottom:0;left:var(--reveal);width:2px;background:#f4dc9a;transform:translateX(-1px);pointer-events:none;box-shadow:0 0 0 1px #16354b66}
+.comparison-divider span{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--bg);color:var(--ink);border:1px solid var(--ink);font-size:20px}
+.comparison-caption{display:flex;justify-content:space-between;gap:16px;color:var(--muted);font-size:11px;margin:12px 0 28px}
+.comparison-controls{display:flex;align-items:center;gap:36px}
+.comparison-range{flex:1;min-width:0}.comparison-range label{display:flex;justify-content:space-between;gap:15px;font-size:13px}
+.comparison-range output{color:var(--muted);font-size:12px}
+.comparison-range input{width:100%;min-height:44px;margin:4px 0 0;accent-color:var(--accent)}
+.comparison-range-ends{display:flex;justify-content:space-between;font-size:10px;color:var(--muted)}
+#comparison-zoom{border:1px solid var(--line);min-height:44px;padding:12px 18px;font-size:12px;white-space:nowrap}
+#comparison-zoom span{margin-left:16px}
+.comparison-presets{display:flex;gap:8px;margin-top:28px;flex-wrap:wrap}
+.comparison-presets button{min-height:44px;border:1px solid var(--line);padding:10px 18px;font-size:12px}
+.comparison-presets button[aria-pressed=true],.timeline-topic-filters button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.research-playground .playground-help{font-size:11px;color:var(--muted);margin-top:18px;max-width:80ch}
+.research-playground .playground-disclosure{font-size:11px;color:var(--muted);margin-top:8px;max-width:85ch}
+.research-playground .playground-connection{font-size:14px;max-width:80ch;margin-top:28px}
+.playground-connection a{font-size:12px;margin-top:8px}
+.playground-fallback img{width:100%;height:auto}
+.playground-entry,.about-timeline-link{margin-top:28px}
+
+/* The news feed becomes a continuous, filterable personal timeline. */
+.timeline-controls{justify-content:space-between;align-items:center;gap:24px;flex-wrap:wrap;margin:0 0 20px}
+.timeline-topic-filters{display:flex;gap:8px}
+.timeline-topic-filters button{border:1px solid var(--line);padding:10px 18px;font-size:12px;min-height:44px}
+.timeline-year-select{display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted)}
+.timeline-year-select select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:0;padding:10px;min-height:44px;min-width:110px}
+select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.news-view .timeline-status{font-size:11px;color:var(--muted);margin-bottom:32px}
+.news-view .timeline-empty{padding:28px 0;border-top:1px solid var(--line);font-size:15px}
+.timeline-year{display:grid;grid-template-columns:110px minmax(0,1fr);gap:30px;margin-bottom:38px}
+.timeline-year .timeline-year-label{font-size:42px;letter-spacing:-.05em;margin:20px 0 0}
+.timeline-year .news-list{border-left:1px solid var(--line);padding-left:28px;min-width:0}
+.timeline-year .news-list>li{position:relative;border:0}
+.timeline-year .news-list>li:before{content:'';position:absolute;left:-33px;top:35px;width:8px;height:8px;background:var(--accent);border-radius:50%;box-shadow:0 0 0 5px var(--bg)}
+.timeline-year .news-list>li[data-news-category=Life]:before{background:var(--bg);border:2px solid var(--accent)}
+.timeline-year .news-entry{grid-template-columns:100px minmax(0,1fr);gap:22px;padding:26px 0 32px}
+.timeline-year .news-list>li+li .news-entry{border-top:1px solid var(--line)}
+.news-copy h4{font-family:Atlas Display,Arial,sans-serif;font-weight:900;font-size:clamp(24px,2.6vw,34px);line-height:1.2;margin:0 0 15px;letter-spacing:-.025em}
+@media(max-width:900px){
+ .timeline-year{grid-template-columns:80px minmax(0,1fr);gap:22px}
+ .timeline-year .news-entry{grid-template-columns:1fr;gap:10px}
+}
+@media(max-width:767px){
+ .research-playground{margin:24px 0 45px;padding-top:28px}
+ .playground-intro h3{font-size:30px}
+ .comparison-controls{flex-direction:column;align-items:stretch;gap:22px}
+ .comparison-caption{font-size:9px;gap:10px;margin-bottom:24px}
+ .comparison-range label{font-size:11px}.comparison-presets{gap:6px;margin-top:20px}
+ .comparison-presets button{padding:10px 12px;font-size:11px}
+ #comparison-zoom{align-self:flex-start}
+ .timeline-controls{gap:14px;align-items:flex-start}
+ .timeline-topic-filters{gap:6px}.timeline-topic-filters button{padding:10px 14px}
+ .timeline-year{grid-template-columns:1fr;gap:14px;margin-bottom:32px}
+ .timeline-year .timeline-year-label{font-size:36px;margin:0}
+ .timeline-year .news-list{margin-left:5px;padding-left:22px}
+ .timeline-year .news-list>li:before{left:-27px}
+ .news-copy h4{font-size:26px}
+}

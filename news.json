@@ -1,5 +1,14 @@
 [
   {
+    "date": "2026-06-25",
+    "category": "Research",
+    "kind": "Preprint",
+    "title": "Vis4GS preprint released",
+    "summary": "Shared the first public version of Vis4GS, our visual analytics tool for inspecting 3D Gaussian Splatting reconstructions.",
+    "url": "https://arxiv.org/abs/2606.26985v1",
+    "linkLabel": "Read the preprint"
+  },
+  {
     "date": "2026",
     "category": "Research",
     "kind": "Acceptance",
@@ -7,5 +16,26 @@
     "summary": "Our paper on visual analytics for 3D Gaussian Splatting reconstruction was accepted as a short paper at IEEE VIS 2026.",
     "url": "https://arxiv.org/abs/2606.26985",
     "linkLabel": "Read the paper"
+  },
+  {
+    "date": "2026",
+    "category": "Life",
+    "kind": "Education",
+    "title": "Started M.S. studies in ISA",
+    "summary": "Started my M.S. in ISA at National Tsing Hua University."
+  },
+  {
+    "date": "2023",
+    "category": "Life",
+    "kind": "Education",
+    "title": "Transferred to Computer Science",
+    "summary": "Transferred from IPTH to Computer Science at NTHU."
+  },
+  {
+    "date": "2022",
+    "category": "Life",
+    "kind": "Education",
+    "title": "Started at NTHU",
+    "summary": "Started my B.S. studies in IPTH at National Tsing Hua University."
   }
 ]

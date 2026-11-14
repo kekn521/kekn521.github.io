@@ -18,6 +18,7 @@ The default is the user's pastel-blue light palette. A manual dark theme persist
 - `styles.css`: atlas composition, full-page views, responsive variants, and themes.
 - `app.js`: hash routing, history, focus, directory dialog, camera controls, and theme.
 - `background.js`: terminal canvas animation and its motion controls.
+- `explore.js`: timeline filters and the real reconstruction comparison.
 - `background.css`: background layering and pause control.
 - `assets/`: optimized research figures, illustrative coffee still life, fonts and licenses.
 - `tests/browser.cjs`: browser checks and screenshots.
@@ -28,7 +29,7 @@ Open `index.html` directly, or run `python3 -m http.server 4173 --bind 127.0.0.1
 
 GitHub Pages uses GitHub Actions. The workflow regenerates the News HTML before both verification and deployment, so `news.json`, the scripts, and the test suite stay repository-only while the generated `index.html` is what gets deployed. The workflow runs browser checks first. Only successful runs on `main` deploy. The `design/full-screen-atlas` branch runs tests and saves screenshots without deploying. Screenshots are attached as `portfolio-browser-review` for seven days.
 
-The deployment stages only `index.html`, `styles.css`, `app.js`, `background.js`, `background.css`, `robots.txt`, `sitemap.xml`, `.nojekyll`, and `assets/`. This repository hosts the root domain. The separate `kekn521` repository remains the GitHub profile repository.
+The deployment stages only `index.html`, `styles.css`, `app.js`, `background.js`, `background.css`, `explore.js`, `robots.txt`, `sitemap.xml`, `.nojekyll`, and `assets/`. This repository hosts the root domain. The separate `kekn521` repository remains the GitHub profile repository.
 
 ## Search discovery
 
@@ -42,4 +43,10 @@ Public research source: https://arxiv.org/html/2606.26985v2.
 
 ### News maintenance
 
-Edit `news.json` only; never hand-edit the generated blocks in `index.html`. Each entry uses: `date` (`YYYY`, `YYYY-MM`, or `YYYY-MM-DD`), `category` (`Research` or `Life`), optional `kind`, `title`, `summary`, and optional `url`/`linkLabel`. Text is plain text (HTML is escaped) and `url` must be an absolute HTTP(S) link. Entries are sorted newest-first; entries with equal dates keep their input order. Regenerate with `python3 scripts/build_news.py` before local preview; `--check` fails if the committed HTML is stale. CI regenerates the HTML during verification and deployment, so a push of `news.json` is enough. The initial entry carries the year-only date 2026 because the known conference year is 2026 and an exact acceptance date was not supplied. Future entries and date refinements can be supplied to the assistant or edited directly in this file; no news items are invented.
+News is an explorable personal timeline at `#news`: entries render into per-year groups (newest year first) with All/Research/Life filters, all driven by `news.json`. New dated items automatically join the correct year group on the next regeneration — no page edits needed. With JavaScript disabled all entries remain visible, and partial dates stay partial: a year-only or year-month entry is shown as such rather than stretched to a fake exact date.
+
+Edit `news.json` only; never hand-edit the generated blocks in `index.html`. Each entry uses: `date` (`YYYY`, `YYYY-MM`, or `YYYY-MM-DD`), `category` (`Research` or `Life`), optional `kind`, `title`, `summary`, and optional `url`/`linkLabel`. Text is plain text (HTML is escaped) and `url` must be an absolute HTTP(S) link. Entries are sorted newest-first; entries with equal dates keep their input order. Regenerate with `python3 scripts/build_news.py` before local preview; `--check` fails if the committed HTML is stale. CI regenerates the HTML during verification and deployment, so a push of `news.json` is enough. The 2026-06-25 preprint entry's date is verified against the primary arXiv submission history for https://arxiv.org/abs/2606.26985v1. The acceptance entry carries the year-only date 2026 because the known conference year is 2026 and an exact acceptance date was not supplied. The 2022 IPTH enrollment, 2023 transfer to Computer Science and 2026 ISA master’s enrollment were supplied directly by the author, with year precision. Future entries and date refinements can be supplied to the assistant or edited directly in this file; no news items are invented.
+
+## Research playground
+
+The Vis4GS detail page compares real reconstruction outputs at iterations 500 and 30,000, sourced from the author's `presentation_assets/evo2_clean.png`. The browser shows two corresponding crops from that unmodified source image. A draggable divider and native keyboard-accessible range reveal one output over the other; Early, Compare and Late presets choose 0%, 50% and 100%. Look closer magnifies the lower center by 2×. The reveal is a comparison of two saved outputs, not an interpolation of training states. No synthetic scene, simulated Gaussian properties, or causal lineage claims are presented. Without JavaScript the original side-by-side comparison remains visible. Research direction links directly to this section.

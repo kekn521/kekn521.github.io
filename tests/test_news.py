@@ -1,5 +1,6 @@
 import importlib.util
 from pathlib import Path
+import re
 import unittest
 
 spec = importlib.util.spec_from_file_location('build_news', Path(__file__).resolve().parents[1] / 'scripts/build_news.py')
@@ -32,6 +33,40 @@ class NewsTests(unittest.TestCase):
                 news.validate([entry(**changes)])
         with self.assertRaises(ValueError):
             news.validate({})
+
+    def test_mixed_years_and_categories_render_in_chronological_groups(self):
+        feed, latest = news.render([
+            entry(date='2024-05-04', category='Life', title='Trail day'),
+            entry(date='2025', category='Research', title='Older paper'),
+            entry(date='2025-03', category='Life', title='Coffee shop'),
+            entry(date='2026-02-02', category='Research', title='Latest paper'),
+        ])
+        self.assertLess(feed.index('data-timeline-year="2026"'), feed.index('data-timeline-year="2025"'))
+        self.assertLess(feed.index('data-timeline-year="2025"'), feed.index('data-timeline-year="2024"'))
+        self.assertEqual(feed.count('data-timeline-year="2025"'), 1)
+        self.assertIn('<section class="timeline-year" data-timeline-year="2025" aria-labelledby="timeline-year-2025"><h3 id="timeline-year-2025" class="timeline-year-label">2025</h3><ol class="news-list">', feed)
+        self.assertEqual(len(feed.split('<article class="news-entry"')) - 1, 4)
+        for title, category, year in (('Latest paper', 'Research', '2026'), ('Coffee shop', 'Life', '2025'), ('Older paper', 'Research', '2025'), ('Trail day', 'Life', '2024')):
+            with self.subTest(title=title):
+                pos = feed.index(title)
+                li = feed[feed.rfind('<li ', 0, pos):feed.index('</li>', pos)]
+                self.assertIn(f'data-news-category="{category}"', li)
+                self.assertIn(f'data-news-year="{year}"', li)
+                self.assertEqual(feed.rfind(f'data-timeline-year="{year}"', 0, pos), feed.rfind('data-timeline-year=', 0, pos))
+        self.assertIn('<time datetime="2024-05-04">4 May 2024</time>', feed)
+        self.assertIn('<time datetime="2025-03">Mar 2025</time>', feed)
+        self.assertIn('<time datetime="2025">2025</time>', feed)
+        self.assertIn('<h3 id="timeline-year-2026" class="timeline-year-label">2026</h3>', feed)
+        self.assertIn('<h4 id="news-title-0">Latest paper</h4>', feed)
+        self.assertNotIn('<h3 id="news-title-', feed)
+        self.assertEqual(sorted(set(int(i) for i in re.findall(r'id="news-title-(\d+)"', feed))), [0, 1, 2, 3])
+        self.assertIn('Latest paper', latest)
+
+    def test_single_year_group_wraps_all_entries(self):
+        feed, _ = news.render([entry(date='2026-02-02', title='A'), entry(date='2026', title='B')])
+        self.assertEqual(feed.count('<section class="timeline-year"'), 1)
+        self.assertIn('data-timeline-year="2026"', feed)
+        self.assertEqual(feed.count('<ol class="news-list">'), 1)
 
     def test_empty_feed_has_honest_state_and_news_link(self):
         feed, latest = news.render([])
